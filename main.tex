@@ -1,0 +1,87 @@
+\documentclass{book}
+\usepackage[utf8]{inputenc}
+
+\title{thesis}
+\author{kogkalidisk }
+\date{May 2019}
+
+% cross-reference other files
+\usepackage{xr}
+
+% url
+\usepackage{hyperref}
+
+% math
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{proof}
+\usepackage{stmaryrd}
+% theorem
+\newtheorem{defn}{Definition}[section]
+% decorated arrow
+% Decorated Arrow
+\newlength{\arrow}
+\settowidth{\arrow}{\scriptsize$10$}
+\newcommand*{\myrightarrow}[1]{\xrightarrow{\mathmakebox[\arrow]{\text{\scriptsize #1}}}}
+% box
+\setlength{\fboxsep}{2pt}
+
+
+
+% color
+\usepackage{color}
+
+% graphics
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+
+% tikz
+\usepackage{tikz}
+\usepackage{pgf}
+\usetikzlibrary{shapes,external}
+\usetikzlibrary{shapes.multipart}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{matrix}
+\usetikzlibrary{calc}
+
+% gloss
+\usepackage{linguex} 
+
+% tabular
+\usepackage{tabularx}
+\usepackage{booktabs}
+\newcolumntype{m}{>{\hsize=.65\hsize}X}
+\newcolumntype{s}{>{\hsize=.4\hsize}c}
+\newcolumntype{u}{>{\hsize=.25\hsize}X}
+\newcolumntype{U}{>{\hsize=.15\hsize}X}
+\usepackage{multicol}
+\usepackage{multirow}
+
+% algorithm
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\listoftables
+\listoffigures
+\listofalgorithms
+
+\input{Chapters/intro.tex}
+
+\input{Chapters/tlg.tex}
+
+\input{Chapters/extraction.tex}
+
+\input{Chapters/supertagging.tex}
+
+\input{Chapters/parsing.tex}
+
+\bibliographystyle{alpha}
+\bibliography{sources}
+\end{document}

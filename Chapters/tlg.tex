@@ -1,0 +1,563 @@
+\chapter{Grammar}
+\label{chapter:tlg}
+
+\section{Background}
+The theoretical framework on top of which this thesis is built are type-logical grammars, a particular family of categorial grammars.
+This chapter aims to provide a brief introductory background on type-logical grammars and their historical origins, positioning them within the broader context of categorial grammars and exposing their distinguishing characteristics.
+Afterwards, an account of the specific grammar instantiation used for the current work will be given, in terms of its logical and and computational bases, together with the motivating reasons for its choice.
+Key references for this chapter are the Stanford Encyclopedia of Philosophy entry for Type-Logical Grammars~\cite{sep-typelogical-grammar} and Moot and Retor{\'e}'s book on Categorial Type Logics~\cite{moot2012logic}.
+
+\subsection{Overview}
+\paragraph{Categorial Grammars}
+Categorial grammar formalisms have their origins in the works of  Adjukiewicz~\cite{ajdukiewicz1935syntaktische} and Bar-Hillel~\cite{bar1953quasi}.
+At their core and ever since their inception, they are defined on the basis of two simple components; a type system and a set of rules dictating type interactions.
+The former is an inductive scheme for category (or type) construction, that utilizes a set of atomic types and a set of type-forming operators to provide the means for creating complex types.
+The latter provides a number of schemata that describe what kinds of type combinations are permitted, and what the productions of these combinations are.
+
+Categorial Grammars treat syntax as the formal process that dictates how phrases are gradually built by their components, which combine with one-another in terms of function-argument relations. 
+They thus epitomize on the \textit{principle of compositionality}, which posits that the meaning of complex expressions is a production of the meaning of their parts and the rules used to compose them.
+
+\paragraph{Parsing as Deduction}
+The key insight of Type-Logical Grammars and their distinguishing feature is the logical take on the parsing process.
+Lambek was the first to notice that categories may be perceived as logical formulas, and type-forming operators as logical connectives~\cite{lambek1958mathematics}.
+Parsing is then lifted from arbitrary schematic rule application to a process of deductive inference, as driven by an underlying logic.
+This yields a number of benefits which will be clarified later; for now, it is worth noting the flexibility inherent to such an approach.
+Altering the choice of logic gives rise to a different grammar, so a new grammar may be designed for particular use-cases by a adopting an appropriate logic.
+As such, Type-Logical Grammars form a wide landscape which encompasses many formalisms which may differ in their properties but all share a proof-theoretic perspective on parsing.
+
+\subsection{Type-Logical Grammars}
+Although a full exposition and comparison between the various incarnations of Type-Logical Grammars escapes the purposes of this work, it is still worthwhile to inspect their persistent aspects and their historical origins.
+
+\paragraph{Lambek Calculus}
+We begin with a brief description of what has come to be known as the Lambek Calculus (L)~\cite{lambek1958mathematics}, which built upon AB Grammars~\cite{bar1953quasi} in providing them with a logical formalization.
+Categories are defined as follows:
+\[
+\textsc{c} := \textsc{a} \ | \ \textsc{c}_1/\textsc{c}_2 \ | \ \textsc{c}_1 \backslash \textsc{c}_2
+\]
+This inductive scheme states that a valid category is either an atomic category $\textsc{a} \in \mathcal{A}$, where $\mathcal{A}$ a closed set of categories, or the result of either of the binary operators $/$, $\backslash$ (read as slash and backslash) on two valid categories.
+Intuitively, an atomic element $\textsc{a}$ corresponds to a complete category, whereas a complex category $\textsc{a}/\textsc{b}$ ($\textsc{a} \backslash \textsc{b}$) correspond to an incomplete (or fractional) category that misses a $\textsc{b}$ to the right (left) to produce a full category $\textsc{a}$, with $/$ and $\backslash$ acting as directional \textit{implications}.
+The corresponding type-logic contains four logical rules, presented here in Natural Deduction style:
+\begin{align*}
+    \begin{minipage}{0.5\textwidth}
+    \begin{align*}
+        \infer{\Gamma, \Delta \vdash B}{
+            \Gamma \vdash B / A
+            &
+            \Delta \vdash A
+        }\tag{/E}\\
+        \\
+        \infer{\Gamma \vdash B/A}{
+            \Gamma, A \vdash B
+        }\tag{/I}
+    \end{align*}
+    \end{minipage}
+    \begin{minipage}{0.5\textwidth}
+    \begin{align*}
+        \infer{\Delta, \Gamma \vdash B}{
+            \Delta \vdash A
+            &
+            \Gamma \vdash A\backslash B
+        }\tag{$\backslash E$}\\
+        \\
+        \infer{\Gamma \vdash A\backslash B}{
+            A, \Gamma \vdash B
+        }\tag{$\backslash I$}
+    \end{align*}
+    \end{minipage}
+\end{align*}
+plus the identity Axiom:
+\[
+\infer{A \vdash A}{}\tag{Ax.}
+\]
+where $A$, $B$ are formulas (i.e. categories) and $\Gamma$, $\Delta$ are sequences of formulas. 
+A statement of the form $\Gamma \vdash A$ is a judgement, expressing that from a sequence of \textit{assumptions} $\Gamma$ one can derive a \textit{conclusion} formula $A$.
+
+The first line presents the slash and backslash Elimination rules, where $/E$ ($\backslash E$) states that if one has a proof of a formula $B/A$ ($A \backslash B$) from assumptions $\Gamma$ and a proof of a formula $A$ from assumptions $\Delta$, then from assumptions $\Gamma$, $\Delta$ ($\Delta$, $\Gamma$) one can derive a formula $B$.
+Note that $\Gamma$, $\Delta$ refers to the concatenation of $\Gamma$ to $\Delta$ and is distinct from $\Delta$, $\Gamma$  --- that is, the order of items within a sequence plays a role in what constitutes a valid proof since our logical rules are non-commutative.
+The second line presents the corresponding Introduction rules.
+Now, $/I$ ($\backslash I$) state that if ones know a sequence $\Gamma$, $A$ to derive a $B$, then $A$ may be withdrawn, allowing one to derive $B/A$ ($B \backslash A$) from $\Gamma$ alone.
+Elimination rules are dual to Introduction rules; the first allow the removal of an implicational type by applying it to its argument, whereas the latter create implicational types by abstracting arguments away, giving our logic access to \textit{hypothetical reasoning}.
+
+% syntax ~hom~> semantics
+% non-associative fragment lambek 61
+% structural control modalities
+% practical concesion => BALANCE stricter proof-theoretic properties, larger type-ambiguity (how do we come up with the proper type assignment?)
+% for languages with free word order the type assignments become even harder (either due to modalities or distinct types)
+% => next section: a lax proof-theoretic version that is easier to type-assign
+% dependency informaiton to recover from loss of directionality
+% dependency information ARE modal operators
+% examples
+% potential semantic interpretations..
+
+To illustrate the linguistic relevance of such a grammar, we will take a second  to review how implication types may be used to convey information on sentence structure.
+First off, atomic categories may be seen as structurally complete, independent phrases.
+Phrasal composition is coordinated by phrasal heads, which are assigned complex categories.
+Heads are then functors which consume the categories of their dependants, producing as a result the wider phrasal category.
+At the bottom level, categories are provided by a \textit{lexicon}, a binary relation which associates lexical entries (i.e. words) with one or more potential categories.
+
+To get the point across, we can devise a minimal grammar capable of modeling the syntactic structure of a small set of example sentences.
+ Let us first initialize an atomic category set consisting of the elements $\textsc{n}$ for noun, $\textsc{np}$ for noun-phrase and $\textsc{s}$ for sentence, and a corresponding lexicon as follows:
+ \[
+ \begin{array}{cc}
+ \text{Word} & \text{Category} \\
+ \hline
+ \text{girl}, \ \text{apple} & \textsc{n} \\
+ \text{children} & \textsc{np} \\
+ \text{the}, \ \text{a(n)} & \textsc{np}/ \textsc{n} \\
+ \text{play(s)} & \textsc{np}\backslash \textsc{s} \\
+ \text{ate} & (\textsc{np} \backslash \textsc{s}) / \textsc{np} \\ 
+ \text{who} & (\textsc{np} \backslash \textsc{np}) / (\textsc{np} \backslash \textsc{s}) \\
+ \text{which} & (\textsc{np} \backslash \textsc{np})/(\textsc{s} / \textsc{np})
+ \end{array}
+ \]
+
+Equipped with the above lexicon, we can use the Lambek Calculus to provide derivations for a number of simple examples as shown in Figure~\ref{fig:lambek_en}, involving usage of our versions of intransitive ``play'' and transitive ``ate'' both in primary and embedded clauses.
+Notice how the introduction rules bypass the need for explicit combinatory rules for peripheral extraction, as seen in the object-relativisation example of~\ref{fig:lambek_en:obj}.
+
+ \begin{figure}
+     \begin{subfigure}[b]{1\textwidth}
+         \centering
+         \[
+         \infer[\backslash E]{\text{children}, \text{play} \vdash \textsc{s}}{
+             \infer[L]{\text{children} \vdash \textsc{np}}{}
+             &
+             \infer[L]{\text{play} \vdash \textsc{np}\backslash \textsc{s}}{}
+         } 
+         \]
+         \caption{Simple intransitive verb derivation.}
+     \end{subfigure}
+     \begin{subfigure}[b]{1\textwidth}
+         \centering
+         \[
+         \infer[\backslash E]{\text{the}, \text{girl}, \text{ate}, \text{an}, \text{apple} \vdash \textsc{s}}{
+             \infer[/E]{\text{the}, \text{girl} \vdash \textsc{np}}{
+                 \infer[L]{\text{the} \vdash \textsc{np} / \textsc{n}}{}
+                 &
+                 \infer[L]{\text{girl} \vdash \textsc{n}}{}
+             }
+             &
+             \infer[/E]{\text{ate}, \text{an}, \text{apple} \vdash \textsc{np} \backslash \textsc{s}}{
+                 \infer[L]{\text{ate} \vdash (\textsc{np} \backslash \textsc{s})/\textsc{np}}{}
+                 &
+                 \infer[/E]{\text{an}, \text{apple} \vdash \textsc{np}}{
+                     \infer[L]{\text{an} \vdash \textsc{np}/ \textsc{n}}{}
+                     &
+                     \infer[L]{\text{apple} \vdash \textsc{n}}{}
+                 }
+             }
+         }
+         \]
+         \caption{Simple transitive verb phrase derivation.}
+     \end{subfigure}
+     \begin{subfigure}[b]{1\textwidth}
+     \[
+     \infer[/ E]{\text{who}, \text{play} \vdash \textsc{np} \backslash \textsc{np}}{
+     	\infer[L]{\text{who} \vdash (\textsc{np}\backslash \textsc{np}) / (\textsc{np} \backslash \textsc{s})}{}
+     	&
+     	\infer[L]{\text{play} \vdash \textsc{np} \backslash \textsc{s}}{}
+     }
+     \]
+     \caption{Subject-relative intransitive verb derivation.}
+     \end{subfigure}
+     \begin{subfigure}[b]{1\textwidth}
+         \centering
+		\[
+		\infer[/E]{\text{who}, \text{ate}, \text{an}, \text{apple} \vdash \textsc{np}\backslash \textsc{np}}{
+			\infer[L]{\text{who} \vdash (\textsc{np} \backslash \textsc{np}) / (\textsc{np} \backslash \textsc{s})}{}
+			&
+			\infer[/E]{\text{ate}, \text{an}, \text{apple} \vdash \textsc{np}\backslash \textsc{s}}{
+				\infer[L]{\text{ate} \vdash (\textsc{np}\backslash \textsc{s})/\textsc{np}}{}
+				&
+				\infer[/E]{\text{an}, \text{apple} \vdash \textsc{np}}{\dots}
+			}
+		}
+		\]
+         \caption{Subject-relative transitive verb derivation.}
+	\end{subfigure}
+	\begin{subfigure}[b]{1\textwidth}
+         \centering
+		\[
+		\infer[/E]{\text{which}, \text{the}, \text{girl}, \text{ate} \vdash \textsc{np}\backslash \textsc{np}}{
+			\infer[L]{\text{which} \vdash (\textsc{np} \backslash \textsc{np}) / (\textsc{s} / \textsc{np})}{}
+			&
+			\infer[/I]{\text{the}, \text{girl}, \text{ate} \vdash \textsc{s}/ \textsc{np}}{
+				\infer[\backslash E]{\text{the}, \text{girl}, \text{ate}, \textsc{np} \vdash \textsc{s}}{
+					\infer[/E]{\text{the}, \text{girl} \vdash \textsc{np}}{\dots}
+					&
+					\infer[/E]{\text{ate}, \textsc{np} \vdash \textsc{np} \backslash \textsc{s}}{
+						\infer[L]{\text{ate} \vdash (\textsc{np} \backslash \textsc{s})/\textsc{np}}{}
+						&
+						\infer[Ax.]{\textsc{np} \vdash \textsc{np}}{}
+					}
+				}
+			}
+		}
+		\]
+        \caption{Object-relative transitive verb derivation.}
+		\label{fig:lambek_en:obj}
+     \end{subfigure}
+     \caption[English Lambek Derivations]{Simple english sentences and their derivations using the Lambek Calculus. $L$ is used in place of Ax. for categories identified with lexical items.}
+     \label{fig:lambek_en}
+\end{figure}
+
+\paragraph{Going Stricter}
+In our presentation of the Lambek calculus, we have treated assumptions $\Gamma$, $\Delta$ as sequences, i.e. ordered collections, of formulas.
+This can, at times, offer the grammar too much creative liberty, resulting in logically correct but linguistically wrong derivations.
+This limitation can be bypassed by enhancing the logic with a notion of structure and set of rules to manipulate it, as originally proposed by Lambek~\cite{lambek1961calculus}.
+Under this new regime, called the non-associative Lambek Calculus (NL), the logical rules are only applicable under the condition of appropriately bracketed structures:
+\begin{align*}
+    \begin{minipage}{0.5\textwidth}
+    \begin{align*}
+        \infer{(\Gamma \circ \Delta) \vdash B}{
+            \Gamma \vdash B / A
+            &
+            \Delta \vdash A
+        }\tag{/E}\\
+        \\
+        \infer{\Gamma \vdash B/A}{
+            (\Gamma \circ A) \vdash B
+        }\tag{/I}
+    \end{align*}
+    \end{minipage}
+    \begin{minipage}{0.5\textwidth}
+    \begin{align*}
+        \infer[\backslash E]{(\Delta \circ \Gamma) \vdash B}{
+            \Delta \vdash A
+            &
+            \Gamma \vdash A\backslash B
+        }\tag{$\backslash E$}\\
+        \\
+        \infer[\backslash I]{\Gamma \vdash A\backslash B}{
+            (A \circ \Gamma) \vdash B
+        }\tag{$\backslash I$}
+    \end{align*}
+    \end{minipage}
+\end{align*}
+
+If the Lambek Calculus is a language of \textit{strings}, its non-associative version is the language of \textit{binary branching trees}; it  respects (and requires) the constituent structure of a phrase in providing its derivation.
+
+\paragraph{Exerting Control}
+Associativity and commutativity (in the form of permutation) may be added to the logic in the form of structural rules that enable them, thus obtaining L and LP (for Lambek Calculus with permutations)~\cite{van1988semantics}:
+\begin{align*}
+\infer{\Gamma[(\Delta_1 \circ \Delta_2) \circ \Delta_3] \vdash C}{\Gamma[\Delta_1 \circ (\Delta_2 \circ \Delta_3)]\vdash C} \tag{Associativity}\\
+\infer{\Gamma[\Delta_1 \circ \Delta_2] \vdash C}{\Gamma[\Delta_2 \circ \Delta_1] \vdash C} \tag{Commutativity}
+\end{align*}
+
+Universally allowing associativity yields a grammar that loses track of constituent structurs, while universal commutativity corresponds to a grammar that completely ignores word order. 
+Disallowing them altogether, on the on other hand, may be too harsh of a measure.
+Notice, for instance, that the example on object-relativisation is no longer derivable without associativity, as seen in Figure~\ref{fig:nl_en:nd}.
+To benefit from associativity and/or commutativity while restraining its applicability to only cases when it really is needed for a derivation, the logic may be expanded with unary modal operators that either allow or block structural rules~\cite{kurtonina1997structural}.
+Structural control modalities improve the logic's proof-theoretic properties -- maximally, the only choices made available during proof search correspond to actual derivational ambiguity (i.e. non spurious).
+That is, if more than one proofs may be devised for a single judgement, they correspond to its different readings.
+
+To briefly illustrate the point, we can consider a pair of unary operators $\diamondsuit$, $\Box$ forming a residual pair such that $\diamondsuit \Box A \vdash A \vdash \Box \diamondsuit A$, with transitivity only applicable on elements marked with $\diamondsuit$:
+\[
+%\infer[A^{\diamondsuit}]{(A\circ B) \circ \diamondsuit C}{A \circ (B \circ \diamondsuit C)}
+\] 
+
+Then adding the type $(\textsc{np} \backslash \textsc{np}) / (\textsc{s}/\diamondsuit \Box \textsc{np})$ in our lexicon for the word ``which'' re-enables the derivability of the running example in Figure~\ref{fig:nl_en:d}.
+
+\begin{figure}[t]
+	\begin{subfigure}[b]{1\textwidth}
+	\centering
+	\[
+	\infer[/E]{(\text{which} \circ ((\text{the} \circ \text{girl}) \circ \text{ate}))) \vdash \textsc{np}\backslash \textsc{np}}{
+		\infer[L]{\text{which} \vdash (\textsc{np} \backslash \textsc{np}) / (\textsc{s} / \textsc{np})}{}
+		&
+		\infer[/I]{((\text{the} \circ \text{girl}) \circ \text{ate}) \vdash \textsc{s}/ \textsc{np}}{
+			\infer[]{(((\text{the} \circ \text{girl}) \circ \text{ate}) \circ \textsc{np}) \vdash \textsc{s}}{
+			\lightning
+			}
+		}
+	}
+	\]
+	\caption[Non-derivable object-relative clause]{Non-derivable object-relative clause in NL.}		
+	\label{fig:nl_en:nd}
+	\end{subfigure}
+	\begin{subfigure}[b]{1\textwidth}
+		\centering
+	\[
+	\infer[/E]{(\text{which} \circ ((\text{the} \circ \text{girl}) \circ \text{ate}))) \vdash \textsc{np}\backslash \textsc{np}}{
+		\infer[L]{\text{which} \vdash (\textsc{np} \backslash \textsc{np}) / (\textsc{s} / \diamondsuit \Box \textsc{np})}{}
+		&
+		\infer[/I]{((\text{the} \circ \text{girl}) \circ \text{ate}) \vdash \textsc{s}/ \diamondsuit \Box \textsc{np}}{
+			\infer[A^{\diamondsuit}]{(((\text{the} \circ \text{girl}) \circ \text{ate}) \circ \diamondsuit \Box \textsc{np}) \vdash \textsc{s}}{
+			\infer[/E]{((\text{the} \circ \text{girl}) \circ (\text{ate} \circ \diamondsuit \Box \textsc{np}))\vdash \textsc{s}}{
+				\infer[\backslash E]{\text{the}, \text{girl}}{\dots}
+				&
+				\infer[\backslash E]{(\text{ate} \circ \diamondsuit \Box \textsc{np}) \vdash \textsc{np} \backslash \textsc{s}}{
+					\infer[L]{\text{ate} \vdash (\textsc{np}\backslash \textsc{s})/\textsc{np}}{}
+					&
+					\infer[]{\diamondsuit \Box \textsc{np} \vdash \textsc{np}}{}
+				}
+			}
+			}
+		}
+	}
+	\]
+	\caption{..now derivable using a residual pair of control operators.}
+	\label{fig:nl_en:d}
+	\end{subfigure}
+	\caption[Structural Control Example]{Example of a structural control modality as a licensing feature for limited associativity.}
+\end{figure}
+
+
+\paragraph{Lexical Ambiguity}
+These proof-theoretic advantages do not come for free, however.
+Even though a stricter type system mitigates the difficulty of proof search, the burden is not removed but rather shifted onto the lexicon.
+As words are assigned more potential types, the lexicon becomes increasingly ambiguous.
+This ambiguity is further exacerbated for languages exhibiting higher degrees of word order freedom, with Dutch being a prime example.
+
+To evaluate what the practical impact of word order freedom is, we will start by making a naive translation of our prior lexicon into Dutch.
+
+ \[
+ \begin{array}{cc}
+ \text{Word} & \text{Category} \\
+ \hline
+ \text{meisje}\ (\textit{girl}), \ \text{appel} \ (\textit{apple}) & \textsc{n} \\
+ \text{kinderen} \ (\textit{children}) & \textsc{np} \\
+ \text{het} \ (\textit{the}) , \ \text{een} \ (\textit{an}) & \textsc{np}/ \textsc{n} \\
+ \text{spelen} \ (\textit{play}), \ \text{spelt} \ (\textit{plays}) & \textsc{np}\backslash \textsc{s} \\
+ \text{at} \ (\textit{ate}) & (\textsc{np} \backslash \textsc{s}) / \textsc{np} \\ 
+ \text{dat} \ (\textit{who$^{SG}$}), \ \text{die} \ (\textit{who$^{PL}$}) & (\textsc{np} \backslash \textsc{np}) / (\diamondsuit \Box \textsc{np} \backslash \textsc{s}) \\
+ \text{dit} \ (\textit{which}) & (\textsc{np} \backslash \textsc{np})/(\textsc{s} / \diamondsuit \Box \textsc{np})
+ \end{array}
+ \]
+
+Things look promising at first; the sentences ``kinderen spelen'' (\textit{children play}) and ``het meisje at een appel''  (\textit{the girl ate an apple}) are derivable, and so is the phrase ``die spelen'' (\textit{who play}), with proofs identical to the first three of Figure~\ref{fig:lambek_en}.
+However, we reach an impasse when trying to create a proof for ``dit een appel at'' (\textit{that ate an apple}) with our current lexicon, even with our transitivity-licensing relativiser, as shown in Figure~\ref{fig:nl_dutch}.
+\begin{figure}
+	\centering
+		\[
+		\infer[/E]{(\text{dat} \circ ((\text{een} \circ \text{appel}) \circ \text{at})) \vdash \textsc{np}\backslash \textsc{np}}{
+			\infer[L]{\text{dat} \vdash (\textsc{np} \backslash \textsc{np}) / (\diamondsuit \Box \textsc{np} \backslash \textsc{s})}{}
+			&
+			\infer[\backslash I]{((\text{een} \circ \text{appel}) \circ \text{at}) \vdash \diamondsuit \Box \textsc{np}\backslash \textsc{s}}{
+				\infer[A^\diamondsuit]{(\diamondsuit \Box \textsc{np} \circ ((\text{een} \circ \text{appel}) \circ \text{at}))}{
+					\infer[]{((\diamondsuit \Box \textsc{np} \circ (\text{een} \circ \text{appel})) \circ \text{at})}{\lightning}
+				}
+			}
+		}
+		\]
+\caption[Dutch non-derivable Example]{Non-derivable subject-relativisation example in Dutch.}
+\label{fig:nl_dutch}
+\end{figure}
+The issue arises because relativisation in Dutch is verb-final, requiring either the additional type $\textsc{np}\backslash(\textsc{np}\backslash\textsc{s})$ for transitive verbs, or modal decorations for conditional commutativity and associativity that would allow the hypothetical noun-phrase to move unhindered through the proof until it finds its correct position.
+
+Similar complications are common, drastically increasing the complexity required of the type system if we want proof search to remain deterministic.
+This complexity can become unwieldy when dealing with large-scale corpora, owing mostly to the potentially immense size (and therefore ambiguity) of the lexicon, but also the considerable difficulty of populating such a lexicon in the first place.
+Consequently, there is a balance between to be sought between the formal well-behavedness of the grammar and its practical applicability.
+
+
+
+\section{A TLG for Semantic Compositionality}
+\subsection{Intuitionistic Linear Logic}
+The above considerations, combined with our goal of constructing a wide-coverage grammar for Dutch, draws our attention towards LP, otherwise known as the Lambek-van Benthem Calculus~\cite{van1988semantics}.
+LP coincides with the implication-only fragment of Intuitionistic Linear Logic (ILL)~\cite{girard1987linear} the notation of which is adopted for the purposes of this presentation.
+ILL is in many ways reminiscent of the Lambek Calculus as shown earlier; the two logical connectives of $/$ and $\backslash$ are collapsed into a single, direction-agnostic implication $\rightarrow$ (an alternative notation is $\multimap$).
+Types are then inductively defined as:
+\[
+\textsc{t} := \textsc{a} \ | \ \textsc{t}_1 \to \textsc{t}_2 
+\]
+where again $\textsc{a}$ is an atomic type and $\textsc{t}_1$, $\textsc{t}_2$ are types.
+
+The implication rules and identity axiom of ILL are presented below:
+
+\begin{center}
+\begin{minipage}{0.5\textwidth}
+\[
+\infer{A \vdash A}{}\tag{Ax.}
+\]
+\end{minipage}\\
+\end{center}
+\begin{align*}
+    \begin{minipage}{0.5\textwidth}
+	\[
+        \infer{\Gamma, \Delta \vdash B}{
+            \Gamma \vdash A \rightarrow B
+            &
+            \Delta \vdash A
+        }\tag{$\rightarrow$ E}
+    \]
+    \end{minipage}
+    \begin{minipage}{0.5\textwidth}
+    \[
+        \infer{\Gamma \vdash A \rightarrow B}{
+            \Gamma, A \vdash B
+        }\tag{$\rightarrow I$}\\
+    \]
+    \end{minipage}
+\end{align*}
+
+
+Note that rather than the sequences of L or binary branching structures of NL, the assumptions of a judgement in ILL are now \textit{multisets}; $\Gamma$, $\Delta$ is then read as the multiset union of $\Gamma$ with $\Delta$ and is equivalent to $\Delta$, $\Gamma$.
+In practical terms, this means that both associativity and commutativity are admitted as holding universally; neither structure nor word order are taken into account when deriving a sentence\footnote{For non-native Dutch speakers, this may at times feel as less of a concession and more of a postulate.}.
+
+\paragraph{The Curry-Howard Correspondence}
+The Curry-Howard Correspondence states that logical propositions are in a one-to-one relation with the types of a functional program.
+ILL, in particular, is directly equivalent to the simply-typed linear $\lambda$-calculus~\cite{benton1993term}.
+A proof then encodes a $\lambda$-term which fully specifies the execution of a functional program, and vice-versa.
+Logical connectives are identified with type constructors; specifically, implicational formulas are the type signatures of function spaces. 
+Assumptions are free variables, and the rules of introduction and elimination find their computational analogues in function abstraction and function application, respectively, whereas the identity axiom corresponds to variable instantiation.
+
+The ramifications of this insight are far-reaching and their analysis falls beyond the scope of this thesis; we rather want to focus on one particular aspect of the correspondence, namely its significance for semantic compositionality.
+
+Let's begin by inspecting the logical rules decorated with their corresponding $\lambda$-terms, and giving them an intuitive reading.
+
+\begin{center}
+\begin{minipage}{0.5\textwidth}
+\[
+\infer{x: A \vdash x: A}{}\tag{Ax.}
+\]
+\end{minipage}\\
+\end{center}
+\begin{align*}
+    \begin{minipage}{0.5\textwidth}
+	\[
+        \infer{\Gamma, \Delta \vdash s(t): B}{
+            \Gamma \vdash s: A \rightarrow B
+            &
+            \Delta \vdash t: A
+        }\tag{$\rightarrow$ E}
+    \]
+    \end{minipage}
+    \begin{minipage}{0.5\textwidth}
+    \[
+        \infer{\Gamma \vdash \lambda x. u : A \rightarrow B}{
+            \Gamma, x: A \vdash u: B
+        }\tag{$\rightarrow I$}\\
+    \]
+    \end{minipage}
+\end{align*}
+
+The identity axiom simply states that we may instantiate a free variable $x$ of type $A$.
+The elimination rule $\rightarrow E$ states that if we have a program that from a set of typed variables $\Gamma$ can produce a function $s$ of type $A \to B$, and a program that from another set $\Delta$ can produce a variable $t$ of type $A$, then $s$ may be applied to $t$ yielding a variable of type $B$.
+Dually, the introduction rule states that from a program that produces a variable $u$ of type $B$ out of a set of variables $\Gamma$ together with a variable $x$ of type $A$, we can construct a program for a function $A\to B$ by abstracting $x$ away.
+
+Recalling that our variables are instantiated by a type lexicon, we can easily shift from syntax to semantics via an isomorphic mapping.
+Concretely, for each lexical type assignment we need also provide a corresponding semantic assignment.
+Then, the process of meaning assembly for a phrase is identical with the execution of the functional program dictated by its syntactic derivation; in other words, we may use the semantic values of our lexicon, applying function-words to their arguments in a hierarchical manner, guided by the $\lambda$-term that encodes the proof structure.
+
+As semantic compositionality is one of the planned applications of our grammar, we will stress this point by providing an abstract example.
+First, let's return to the prior examples, now using an ILL-adapted lexicon\footnote{Throughout the remainder of this thesis, we will use a right-implicit parentheses notation for ILL types; that is, $A\to B \to C$ is read as $A\to (B \to C)$ and is distinct from $(A\to B) \to C$}:
+
+ \[
+ \begin{array}{cc}
+ \text{Word} & \text{Category} \\
+ \hline
+ \text{meisje}, \ \text{appel} & \textsc{n} \\
+ \text{het}, \ \text{een}  & \textsc{n} \to \textsc{np}\\
+ \text{at}  & \textsc{np} \to \textsc{np} \to \textsc{s}\\ 
+ \text{dat}, \ \text{die}, \ \text{dit} & (\textsc{np}\to \textsc{s})\to \textsc{np} \to \textsc{np} \\
+ \end{array}
+ \]
+
+Figure~\ref{fig:ill_dutch} presents derivations for a transitive verb phrase in primary and embedded clauses.
+The corresponding $\lambda$-terms are obtained by following the proof constructions top-down.
+Note that the embedded clause example that gave us trouble earlier is now trivial to derive, while maintaining the subject-relative reading.
+
+\begin{figure}
+	\begin{subfigure}[b]{1\textwidth}
+	\centering
+	\small
+		\[
+		\infer[\rightarrow E]{\text{het}, \text{meisje}, \text{at}, \text{een}, \text{appel} \vdash \textsc{s}}{
+			\infer[\rightarrow E]{\text{at}, \text{een}, \text{appel} \vdash \textsc{np} \to \textsc{s}}{
+				\infer[L]{\text{at} \vdash \textsc{np} \to \textsc{np} \to \textsc{s}}{}
+				&
+				\infer[\rightarrow E]{\text{een}, \text{appel} \vdash \textsc{np}}{
+					\infer[L]{\text{een} \vdash \textsc{n} \to \textsc{np}}{}
+					&
+					\infer[L]{\text{appel} \vdash \textsc{n}}{}
+				}
+			}
+			&		
+			\infer[\rightarrow E]{\text{het}, \text{meisje} \vdash \textsc{np}}{
+				\infer[L]{\text{het} \vdash \textsc{n} \to \textsc{np}}{}
+				&
+				\infer[L]{\text{meisje} \vdash \textsc{n}}{}
+			}
+		}
+		\]
+		\caption{Simple transitive verb derivation, with $\lambda$-term (at(een appel))(het meisje)}
+		\end{subfigure}
+		\begin{subfigure}[b]{1\textwidth}
+		\centering
+		\scriptsize
+		\[
+		\infer[\rightarrow E]{\text{dat}, \text{een}, \text{appel}, \text{at} \vdash \textsc{np} \to \textsc{np}}{
+			\infer[L]{\text{dat} \vdash (\textsc{np} \to \textsc{s}) \to \textsc{np} \to \textsc{np}}{}
+			&
+			\infer[\rightarrow E]{\text{een}, \text{appel}, \text{at} \vdash \textsc{np} \to \textsc{s}}{
+				\infer[L]{\text{at} \vdash \textsc{np} \to \textsc{np} \to \textsc{s}}{}
+				&
+				\infer[\rightarrow E]{\text{een}, \text{appel} \vdash \textsc{np}}{
+					\infer[L]{\text{een} \vdash \textsc{n} \to \textsc{np}}{}
+					&
+					\infer[L]{\text{appel} \vdash \textsc{n}}{}
+				}
+			}
+		}
+		\]
+		\caption{Subject-relative transitive verb derivation, with $\lambda$-term dat(at (een appel))}
+		\label{subfig:ill_dutch:sub}
+		\end{subfigure}
+		\begin{subfigure}[b]{1\textwidth}
+		\centering
+		\scriptsize
+		\[
+		\infer[\rightarrow E]{\text{dit}, \text{het}, \text{meisje}, \text{at} \vdash \textsc{np} \to \textsc{np}}{
+			\infer[L]{\text{dit} \vdash (\textsc{np} \to \textsc{s})\to \textsc{np} \to \textsc{np}}{}
+			&
+			\infer[\rightarrow I]{\text{het}, \text{meisje}, \text{at} \vdash \textsc{np} \to \textsc{s}}{
+				\infer[\rightarrow E]{\text{het}, \text{meisje}, \text{at}, \textsc{np} \vdash \textsc{s}}{
+					\infer[\rightarrow E]{\text{at}, \textsc{np}\vdash \textsc{np} \to \textsc{s}}{
+						\infer[L]{\text{at} \vdash \textsc{np} \to \textsc{np} \to \textsc{s}}{}
+						&
+						\infer[Ax.]{\textsc{np} \to \textsc{np}}{}
+					}
+					&
+					\infer[\rightarrow E]{\text{het}, \text{meisje} \vdash \textsc{np}}{
+						\infer[L]{\text{het} \vdash \textsc{n} \to \textsc{np}}{}
+						&
+						\infer[L]{\text{meisje} \vdash \textsc{n}}{}					
+					}
+				}
+			}
+		}
+		\]
+		\caption{Object-relative transitive verb derivation, with $\lambda$-term dit($\lambda x$.((at $x$)(het meisje)))}
+		\label{subfig:ill_dutch:obj}
+		\end{subfigure}
+\caption[Example ILL Derivations]{Example derivations in ILL}
+\label{fig:ill_dutch}
+\end{figure}
+
+Now, given a mapping $\lceil .\rceil$ from words to semantic objects, we may obtain a compositionally driven semantic interpretation over larger linguistic units by recursively applying the mapping on the proofs' $\lambda$-terms, e.g.:
+\[
+\lceil \text{dit het meisje at} \rceil = \lceil \text{dit} \rceil (\lambda x. ((\lceil \text{at} \rceil \ x)(\lceil \text{het} \rceil \lceil \text{meisje} \rceil))
+\]
+
+The exact semantic spaces operated on are still open to our creative libery; specifying those escapes the context of this thesis, but the grammar's ability to accommodate a multitude of such spaces is still an important point to consider.
+
+\subsection{Dependency Refinement}
+Earlier, we saw how ILL simplifies the derivation process for cases that would otherwise require involved structural reasoning.
+The apt reader will, however, have noticed that this laxity can result in erroneous analyses.
+Returning, for instance, to the relativisation examples of Figure~\ref{fig:ill_dutch}, there is no restriction enforcing us to derive the particular readings derived.
+The proof structure of~\ref{subfig:ill_dutch:sub} could be applied to~\ref{subfig:ill_dutch:obj} and vice-versa, resulting in linguistically inaccurate reading	s.
+Even though associativity and commutativity mitigate the problem of resolving long-distance or crossing dependencies, they vastly increase the proof-search space and permit derivations that are completely off-point.
+
+This is a compromise consciously made; even though the types will not suffice for deductive parsing, they may be used as an auxiliary information source on top of the words themselves.
+The assumption made here is that the combination of lexical-level preferences and type-level information will prove adequate in the selection of the most plausible reading and its proof; for example, when concerned with the sentence ``het meisje at een appel'' (\textit{the girl ate an apple}), we know with a degree of certainty that apples are much more plausible as objects of being eaten compared to girls.
+
+% this insight => constants == dependencies, position = variables
+\begin{figure}
+\centering
+
+\end{figure}
+
+
+% \paragraph{Combinatory Categorial Grammars}
+% The simplicity of AB Grammars comes at the expense of their limited expressivity.
+% AB grammars struggle with even plain cases of relativisation.
+% Attempting for instance to derive the sentence ``het meisje dat speelt'' (\textit{the girl whoplays}) would require a category 11111
