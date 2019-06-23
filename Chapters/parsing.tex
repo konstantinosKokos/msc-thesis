@@ -1,2 +1,261 @@
 \chapter{Parsing}
 \label{chapter:parsing}
+
+This chapter presents presents preliminary results on parsing using the grammar specification of Chapter~\ref{chapter:tlg} and the extraction results of Chapter~\ref{chapter:extraction}.
+A version of this manuscript has been accepted for presentation at the third workshop on Semantic Spaces at the Intersection of NLP, Physics, and Cognitive Science (SemSpace2019).
+
+\section{Background}
+Natural language parsing has been a subject of extensive research during the last decades.
+Current state-of-the-art relies on recurrent neural networks equipped with complex data structures that are used to rank the potential parsing steps~\\\cite{dyer-etal-2016-recurrent, dozat2016deep, liu-zhang-2017-order}.
+It is not uncommon for combinations of models or training tasks to also be used in order to further improve performance~\cite{clark2018semi, fried2017improving}.
+Despite their impressive results, such models are usually complicated to reason about, inconvenient to adapt to different domains and computationally expensive, making them difficult to train and employ.
+
+In light of the above, we take an alternative approach towards parsing that seeks to maximally utilize the proof-theoretic properties of our grammar while remaining as simple and cost-efficient as possible.
+
+\section{Framework}
+The key insight is that a parse is a proof, and a proof is simply a sequence of logical rule applications.
+If we were to model these rules, namely implication introduction and elimination, and follow them in a backwards-search fashion, we would obtain a proof-faithful parser.
+
+With the above in mind, we draw an abstract picture of a backwards-search parsing process in Algorithm~\ref{alg:parse}.
+
+\begin{algorithm}{
+\caption{Parse Step}\label{alg:parse}
+\Comment{Performs a backward step of the proof reconstruction.}
+\begin{algorithmic}[1]
+\Procedure{ParseStep}{\textsc{Premises}}
+    \State $\textsc{Goal}\gets \textsc{InferGoal}(\textsc{Premises})$
+    \While{\textsc{CanIntroduce}()}
+        \State (\textsc{premises}$, $\textsc{Goal}$) \gets \textsc{ApplyIntro}(\textsc{premises}, \textsc{Goal})$
+    \EndWhile
+    \State $(\textsc{PremisesLeft}, \textsc{PremisesRight}) \gets \textsc{ApplyElim}(\textsc{Premises}, \textsc{Goal})$
+    \State $\textbf{return} \ (\textsc{PremisesLeft}, \textsc{PremisesRight})$
+\EndProcedure
+\end{algorithmic}
+}
+\end{algorithm}
+
+The procedure defined may be decomposed into several subroutines, outlined in the next paragraphs.
+
+\paragraph{Goal Inference}
+First, given the types at the left-hand side of a judgement as assumptions, we need to obtain the conclusion, i.e. the proof's goal type at the current step.
+Although this is not a strict requirement for the general framework, it is mandatory if we wish to perform introduction online, rather than as a post-processing step, which in turn allows us to inform the elimination module of the goal type at each prior time step.
+
+\paragraph{Introduction}
+The next step involves determining whether an introduction rule may be applied. 
+Generally, any time the goal type is a complex type, we can safely replace it by its result (i.e. the type on the right side of the main implication connective) while adding its argument (i.e. the type on the left side of the main connective) onto the list of premises, a functionality implemented by the \textsc{ApplyIntro} routine.
+This is not the case, however, if the main connective carries a name corresponding to a modifier label, or the argument to be introduced was just eliminated at the immediately prior step of the backwards proof search (thus avoiding infinite loops); \textsc{CanIntroduce} can be designed as a minimal stateful program that keeps track of these two conditions and informs the parser accordingly.
+
+\paragraph{Elimination}
+Finally, given that our complex types are the signatures of binary functors, elimination may be treated as the splitting of a sequence (\textsc{Premises}) into two disjoint, possibly non-contiguous, subsequences (\textsc{PremisesLeft} and \textsc{PremisesRight}), where the elements of the first together form the argument that is to be consumed by the function formed by the elements of the second.
+
+\paragraph{Overview}
+In practical terms, we first provide our system with a phrase (the full sequence of premises), out of which the phrasal type is derived.
+After zero or more introduction applications, the phrase is split into two disjoint (possibly non-contiguous) sequences of premises.
+If any of the resulting sequences has an length of one, it corresponds to an axiom leaf; otherwise, it requires further processing, which is accomplished by repeating the same process anew.
+This iteration progressively yields a binary branching tree, that is in one-to-one correspondence with the underlying proof constructed bottom-up (with introduction rules telescoped).
+
+\section{Implementation}
+\subsection{Count Invariance}
+As mentioned earlier, goal inference is only needed if we to perform introduction steps during proof construction and thus keep track of the goal formula at each proof step.
+A very simple way to implement the \textsc{InferGoal} routine, which is nevertheless sufficient for our preliminary experiments, is by utilizing the  \emph{count invariance} property~\cite{DBLP:journals/jphil/Benthem91} that requires a balanced number of input and output occurrences of individual atomic types.
+Concisely, we may imagine each complex type as a fractional, with the result type as its nominator and the argument type as its denominator.
+Out of a multiset of assumptions, the conclusion may then be derived by performing a multiplication over the corresponding types, with fractionals maximally simplified afterwards.
+This process (combined with our ability to deterministically arrange functor types via the argument ordering scheme of subsection~\ref{subsec:extraction_alg}) yields a unique type which is generally the correct one, modulo a few edge cases.
+
+Things become less straightforward when considering modifiers; being polymorphic instances of the $\textsc{x} \to \textsc{x}$ scheme, their fractional representations are self-canceling, thus invisible to the count invariance.
+This rarely, however, poses a problem, if we take into account that a) the bottom step of the proof will never have a modifier type as its conclusion, given that modifiers are context-specific (for instance, an adjectival phrase in isolation will be typed as $\textsc{ap}$ rather than $\textsc{np} \to \textsc{np}$) and b) the goal type may also be inferred by taking the goal type of the prior parse step and ``subtracting'' the goal type of the eliminated argument of the current parse step.
+
+Even after this alteration, some cases still remain unsettled.
+Third or higher order types require hypothetical reasoning over embedded functors, rather than arguments.
+If these happen to be modifiers, they are again invisible to the count invariance, but no immediate way of resolving them is now evident.
+
+Count invariance also struggles under conjunction, as our coordinator types do not specify the exact number of conjuncts but only their general structure; i.e. there is an added variable that the type equations need to be solved against, the value of which would specify the exact instantiation of the coordinator type. 
+
+Given the prototype nature of the parsing experiments, we refrain from designing a more complicated algorithm targeted towards these cases.
+Instead, for the time being we simply ignore samples that involve such constructions.
+For the sake of argument, many directions are possible as future work; for instance utilizing heuristics that account for higher-order lexical type assignments, or even a full replacement with a neural, lexically informed module responsible for type inference.
+
+\subsection{Elimination as Binary Sequence Classification}
+\label{subsec:model}
+At this point, recall that our grammar specification assumes associativity and commutativity as universally holding, a design choice that limits the type system's complexity and enhances its learnability.
+The non-directionality of $\rightarrow$ means that the splitting done by \textsc{ApplyElim} is not deterministic.
+In practice, the type assignments made by the supertagger (even when fully correct) may admit more proofs (or parses) than linguistically desired.
+To constrain the search space over parses to just those that are linguistically plausible but also constitute valid proofs, our parser needs to resolve ambiguities by incorporating both lexical and type-level information.
+Hence, rather than treating \textsc{Premises} as a sequence of types, we instead expand it to sequence of pairs of words and types.
+This allows us to distinguish between elements that share the same type but are anchored to different lexical items --- an addition that, together with our dependency-decorated types, allows for a preferential treatment of particular words with respect to certain dependency roles under different contexts.
+
+With this in mind, we choose to model \textsc{ApplyElim} as a neural function.
+Under its current specification, the function's task is to split a sequence into two disjoint subsequences; or equivallently, to assign a binary label for each item within the sequence.
+Binary sequence classification is an established problem in machine learning literature, which points to the direct applicability of standard recurrent architectures.
+Our network is a standard variant of such an architecture; we allow a bidirectional, two-layer deep Gated Recurrent Unit (GRU)~\cite{gru} to iterate over the vectorial representations of the input sequence.
+A linear transformation then converts the high-dimensional vectors of the recurrent unit onto a class weight vector in $\mathbb{R}^2$, which are converted onto class probabilities by the softmax function.
+
+To create vectorial representations of our sequence elements, we first apply the ELMo used by the supertagger onto each word of a sentence.
+A word's vector $\overrightarrow{w}$ is then given by ELMo(word, context), where context refers to the initial sentence (prior to any eliminations).
+By using a contextual embedding that is informed by the full sentence and letting it persist unchanged throughout the proof, we can provide the parser with an implicit notion of the proof's "past" while drastically reducing the computational costs associated with calculating the word vectors at each step.
+Next, we convey the type-level information by associating each unique type with a vector.
+Recalling that complex types (in Polish notation) are sequences of atomic types and binary connectives, for which we already have embeddings as produced by the supertagger, we construct complex type embeddings by iterating another GRU over the vector sequences that correspond to each complex type.
+
+A word-type pair's vector is then simply the concatenation of its word and type vectors.
+In cases where an element participating in an elimination is not lexically grounded (i.e. types generated by prior introduction rules), we simply set its word vector to zeros.
+Finally, in order to inform the network of the conclusion type (which we have already derived), we further concatenate its vector onto each word-type pair, essentially converting the recurrence into a function that is parametric with respect to the goal type.
+
+A visual presentation of the network is shown in Figure~\ref{fig:elimnet}.
+
+\subsection{Experiments}
+\paragraph{Implementation Details}
+We use a 1-layer unidirectional GRU with an input and hidden dimensionality of 1024 as our type embedder.
+For the premise-level GRU, we set its hidden dimensionality to 256, its number of layers to 2 and apply a recurrent dropout of 0.5 for regularization.
+We train our network using a cross-entropy loss and an AdamW optimizer \cite{adamW} with a learning rate of 10${}^{-3}$ and a weight decay of 10${}^{-4}$.
+
+\paragraph{Training}
+To train the network, we precompute the contextualized vectors for each word participating in an elimination. 
+Since the word vectors do not change within any single proof, we may then treat each elimination as an independent data point, allowing multiple eliminations (possibly from different sentences) to be processed in parallel.
+This gives us the ability to avoid complex data structure manipulation during training time, abolishing the need for CPU instructions that insert computational overhead.
+In effect, the neural component of the parser is based solely on highly optimized tensor operations and requires no more than a couple of minutes to train, despite its high expressivity.
+This marks a significant improvement over modern parsing architectures, which commonly involve a stack containing partial derivations which is continuously written to and read from, in both the temporal axis (the parse steps) and the sentential axis (the neural iteration over the words).
+
+\paragraph{Inference}
+The inference process is identical to training, except for the fact that the input is no longer an independent sample, but rather the production of a previous application of the network (or, the initial phrase).
+End-to-end inference has quadratic complexity with respect to the input length (linear number of eliminations, linear iteration complexity per elimination).
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[every text node part/.style={align=center},
+ every node/.style={transform shape},
+ scale=0.7,
+block/.style={rectangle, inner sep=0pt, minimum width=120pt, minimum height=20pt, rounded corners, ultra thick},
+str/.style={rectangle, inner sep=0pt, minimum width=120pt, minimum height=20pt},
+arrow/.style={->, thick},
+pwise/.style={circle, inner sep=0pt, minimum size=10pt},
+smallblock/.style={circle, inner sep=5pt, minimum size=12pt, rounded corners, thick},
+mediumblock/.style={rectangle, inner sep=0pt, minimum width=30pt, minimum height=20pt, rounded corners, ultra thick},
+mini/.style={rectangle, inner sep=0pt, minimum width=30pt, minimum height=20pt, thick, draw=black,}]
+
+%	\node[str] (sentence) at (0, 5) {Input Sentence};
+%	\node[str] (symbols) at (7.5, 5) {Input Type Sequences};
+%	\node[str] (goal) at (13, 5) {Input Goal};
+\node[str] (sentence) at (4, -0.5) {Input Sentence};
+\node[str] (dog) at (3, 0) {hond};
+\node[str] (bites) at (4, 0) {bijt};
+\node[str] (man) at (5, 0) {man};
+
+\node[block, draw=gray!130, fill=gray!10] (elmo) at (4, 1.5) {\textcolor{gray!110}{ELMo}};
+
+\draw (dog) edge[arrow, gray!130] ($(elmo.south) + (-1, 0)$);
+\draw (bites) edge[arrow, gray!130] (elmo);
+\draw (man) edge[arrow, gray!130] ($(elmo.south) + (1, 0)$);
+
+\node[str] (w1) at (3, 3) {$\overrightarrow{w_1}$};
+\node[str] (w2) at (4, 3) {$\overrightarrow{w_2}$};
+\node[str] (w3) at (5, 3) {$\overrightarrow{w_3}$};
+
+\draw ($(elmo.north) + (-1, 0)$) edge[arrow, black] (w1);
+\draw (elmo) edge[arrow, black] (w2);
+\draw ($(elmo.north) + (1, 0)$) edge[arrow, black] (w3);
+
+\node[str] (types) at (11, -0.5) {Input Type Sequences};
+\node[str] (su) at (9, 0) {\textsc{np}};
+\node[str] (verb) at (11, 0) {$\myrightarrow{obj} \textsc{np} \myrightarrow{su} \textsc{np} \  \textsc{s}_\text{main}$};
+\node[str] (obj) at (13, 0) {\textsc{np}};
+
+\node[str] (t1) at (9, 3) {$\overrightarrow{t_1}$};
+\node[str] (t2) at (11, 3) {$\overrightarrow{t_2}$};
+\node[str] (t3) at (13, 3) {$\overrightarrow{t_3}$};
+
+\node[mediumblock, draw=black] (T1) at (9, 1.5) {$\pmb{\mathcal{T}}$};
+\node[mediumblock, draw=black] (T2) at (11, 1.5) {$\pmb{\mathcal{T}}$};
+\node[mediumblock, draw=black] (T3) at (13, 1.5) {$\pmb{\mathcal{T}}$};
+
+\draw (su) edge[arrow, gray!130] (T1);
+\draw (T1) edge[arrow, black] (t1);
+\draw (verb) edge[arrow, gray!130] (T2);
+\draw (T2) edge[arrow, black] (t2);
+\draw (obj) edge[arrow, gray!130] (T3);
+\draw (T3) edge[arrow, black] (t3);
+
+\node[str] (goal) at (17, -0.5) {Input Goal Type};
+\node[str] (g) at (17, 0) {$\textsc{s}_\text{main}$};
+\node[str] (gt) at (17, 3) {$\overrightarrow{g}$};
+\node[mediumblock, draw=black] (T4) at (17, 1.5) {$\pmb{\mathcal{T}}$};
+\draw (g) edge[arrow, black] (T4);
+\draw (T4) edge[arrow, black] (gt);
+
+\node[str] (wtg1) at (9, 5) {$\overrightarrow{w_1};\overrightarrow{t_1};\overrightarrow{g}$};
+\node[str] (wtg2) at (11, 5) {$\overrightarrow{w_2};\overrightarrow{t_2};\overrightarrow{g}$};
+\node[str] (wtg3) at (13, 5) {$\overrightarrow{w_3};\overrightarrow{t_3};\overrightarrow{g}$};
+
+\draw (w1.north) edge[arrow, ultra thin, dashed] ($(wtg1.south) + (-0.7, 0)$);
+\draw (w2.north) edge[arrow, ultra thin, dashed] ($(wtg2.south) + (-0.7, 0)$);
+\draw (w3.north) edge[arrow, ultra thin, dashed] ($(wtg3.south) + (-0.7, 0)$);
+
+\draw (t1.north) edge[arrow, ultra thin, dashed] (wtg1.south);
+\draw (t2.north) edge[arrow, ultra thin, dashed] (wtg2.south);
+\draw (t3.north) edge[arrow, ultra thin, dashed] (wtg3.south);
+
+\draw (gt.north) edge[arrow, ultra thin, dashed] ($(wtg1.south) + (0.7, 0)$);
+\draw (gt.north) edge[arrow, ultra thin, dashed] ($(wtg2.south) + (0.7, 0)$);
+\draw (gt.north) edge[arrow, ultra thin, dashed] ($(wtg3.south) + (0.7, 0)$);
+
+\node[block, draw=black, minimum width=160pt] (RNN2) at (11.25, 7.25) {};
+\node[block, draw=black, minimum width=160pt, fill=white] (RNN) at (11, 7) {$\pmb{\mathcal{E}}$};
+\draw (wtg1) edge[arrow, black] ($(RNN.south) + (-2, 0)$);
+\draw (wtg2) edge[arrow, black] ($(RNN.south) + (-0, 0)$);
+\draw (wtg3) edge[arrow, black] ($(RNN.south) + (2, 0)$);
+
+\node[str] (l1) at (9, 9) {1};
+\node[str] (l2) at (11, 9) {1};
+\node[str] (l3) at (13, 9) {0};
+-
+\draw ($(RNN2.north) + (-2.25, 0)$) edge[arrow, black] (l1);
+\draw ($(RNN2.north) + (-0.25, 0)$) edge[arrow, black] (l2);
+\draw ($(RNN2.north) + (1.7, 0)$) edge[arrow, black] (l3);
+
+\end{tikzpicture}
+\caption[Neural Elimination Module]{The \textsc{ApplyElim} neural architecture, where $\mathcal{T}$ refers to the type-level GRU, and $\mathcal{E}$ to the premise-level GRU. Vector concatenation is denoted by $;$. For the example word input ``hond bijt man'', ``man'' is the element to be eliminated, therefore getting the label 0.}
+\label{fig:elimnet}
+\end{figure*}
+
+\paragraph{Experimental Setup}
+We run preliminary experiments on a subset of our data to evaluate the framework's potential.
+We limit our experiments to sentences involving types of at most order 2 and no conjunctions for the reasons outlined earlier.
+The resulting dataset counts 33\,000 sentences (approximately half of the original), out of which 340\,000 instaces of eliminations are generated.
+We train on the first 80\% of the sentences, and report results on the remaining 20\%.
+In order to assess the parser in isolation, we use the gold extracted types rather than the types assigned by the supertagger.
+
+\paragraph{Ablations} 
+We perform a number of ablations to gain an understanding of the relative influence of each extra source of information to the model.
+Table~\ref{table:results} reports our results.
+
+\begin{table}
+\centering
+\noindent
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\ra{1.1}
+\begin{tabularx}{0.75\textwidth}{@{}l|mmmm@{}}
+Model \quad & \centering Full & \centering Full-g & \centering Full-g-t & \multicolumn{1}{m}{\centering Full-g-w}  \\
+\hline
+Accuracy \quad \quad & \centering \textbf{97.15} & \centering 95.3 & \centering 87.77 & \multicolumn{1}{m}{\centering 94.2} \\
+\end{tabularx}
+\caption[Elimination Module Performance]{Percentage of eliminations correctly analyzed by each model, where Full refers to the model  described in~\ref{subsec:model}, and -g, -t, -w refer to a model where the goal, type and word-level inputs have been removed respectively.}
+\label{table:results}
+\end{table}
+
+\paragraph{Analysis}
+As all other parsing subroutines considered are deterministic, the neural elimination module is the factor that decides the upper boundary of our system's performance.
+Evidently, the model achieves highly competitive accuracy scores despite its simple formulation and implementation.
+Further, it manages to successfully incorporate all informational sources, as suggested by its increased performance when allowed access to more inputs.
+When trained only on word or type information, it still manages adequate accuracy scores, attesting to the high quality of both the word vectors as yielded by the pretrained ELMo, and also the rich informational content of the atomic embeddings as produced by the supertagger.
+
+The raw numbers presented are of course not fully indicative of the system's performance in a realistic setting, as many potential error sources have been artificially removed.
+First off, the types considered are the correct ones, whereas they would normally need to be produced by the supertagger.
+To increase its robustness against wrong tags, the training process could emulate these by confounding the input types in a controlled manner (alternatively, the two could be jointly trained on a shared portion of the dataset).
+Further, eliminations are performed independently, meaning that errors from prior eliminations within a sentence are not propagated upwards through the proof.
+Finally, the sentences analyzed are on the easier side of the spectrum, as they involve either no or limited hypothetical reasoning and no conjunctions (which were also the major source of error for the supertagger).
+Nevertheless, these first results testify to the strength of the general approach and show that an undirectional type logic provides fertile grounds for parsing, confirming our original hypotheses and earlier design decisions.
+
+\section{Summary}
+In this chapter, we introduced an abstract framework for the construction of type-logical proofs in a backwards fashion.
+We then instantiated this framework with a basic goal inference component capable of dealing with a portion of possible input judgements and an elimination component in the form of a simple recurrent network.
+This elementary instantiation serves as a concrete proof-of-concept rather than a completely developed parser.
+Yet, its very high preliminary results are a clear indication that efficient and highly accurate parsing with our undirectional type logic (and the type lexicon extracted) is within reach.

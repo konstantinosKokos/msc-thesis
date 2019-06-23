@@ -35,7 +35,7 @@
     pages = "250--255",
 }
 @inproceedings{lewis-etal-2016-lstm,
-    title = "LSTM CCG Parsing",
+    title = "{LSTM CCG} Parsing",
     author = "Lewis, Mike  and
       Lee, Kenton  and
       Zettlemoyer, Luke",
@@ -268,24 +268,6 @@ month={Nov},
   pages={8},
   year={2019}
 }
-@inproceedings{encdec,
-    title = "Learning Phrase Representations using {RNN} Encoder{--}Decoder for Statistical Machine Translation",
-    author = "Cho, Kyunghyun  and
-      van Merrienboer, Bart  and
-      Gulcehre, Caglar  and
-      Bahdanau, Dzmitry  and
-      Bougares, Fethi  and
-      Schwenk, Holger  and
-      Bengio, Yoshua",
-    booktitle = "Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
-    month = oct,
-    year = "2014",
-    address = "Doha, Qatar",
-    publisher = "Association for Computational Linguistics",
-    url = "https://www.aclweb.org/anthology/D14-1179",
-    doi = "10.3115/v1/D14-1179",
-    pages = "1724--1734",
-}
 @inproceedings{Lassy,
 author = {van Noord, Gertjan and Schuurman, Ineke and Vandeghinste, Vincent},
 year = {2006},
@@ -477,4 +459,92 @@ publisher = "European Language Resources Association (ELRA)",
   number={Nov},
   pages={2579--2605},
   year={2008}
+}
+@article{abramsky1993computational,
+  title={Computational interpretations of linear logic},
+  author={Abramsky, Samson},
+  journal={Theoretical computer science},
+  volume={111},
+  number={1-2},
+  pages={3--57},
+  year={1993},
+  publisher={Elsevier}
+}
+@inproceedings{dyer-etal-2016-recurrent,
+    title = "Recurrent Neural Network Grammars",
+    author = "Dyer, Chris  and
+      Kuncoro, Adhiguna  and
+      Ballesteros, Miguel  and
+      Smith, Noah A.",
+    booktitle = "Proceedings of the 2016 Conference of the North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies",
+    month = jun,
+    year = "2016",
+    address = "San Diego, California",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/N16-1024",
+    doi = "10.18653/v1/N16-1024",
+    pages = "199--209",
+}
+@article{clark2018semi,
+  title={Semi-supervised sequence modeling with cross-view training},
+  author={Clark, Kevin and Luong, Minh-Thang and Manning, Christopher D and Le, Quoc V},
+  journal={arXiv preprint arXiv:1809.08370},
+  year={2018}
+}
+@article{dozat2016deep,
+  title={Deep biaffine attention for neural dependency parsing},
+  author={Dozat, Timothy and Manning, Christopher D},
+  journal={arXiv preprint arXiv:1611.01734},
+  year={2016}
+}
+@article{liu-zhang-2017-order,
+    title = "In-Order Transition-based Constituent Parsing",
+    author = "Liu, Jiangming  and
+      Zhang, Yue",
+    journal = "Transactions of the Association for Computational Linguistics",
+    volume = "5",
+    year = "2017",
+    url = "https://www.aclweb.org/anthology/Q17-1029",
+    doi = "10.1162/tacl_a_00070",
+    pages = "413--424",
+    abstract = "Both bottom-up and top-down strategies have been used for neural transition-based constituent parsing. The parsing strategies differ in terms of the order in which they recognize productions in the derivation tree, where bottom-up strategies and top-down strategies take post-order and pre-order traversal over trees, respectively. Bottom-up parsers benefit from rich features from readily built partial parses, but lack lookahead guidance in the parsing process; top-down parsers benefit from non-local guidance for local decisions, but rely on a strong encoder over the input to predict a constituent hierarchy before its construction. To mitigate both issues, we propose a novel parsing system based on in-order traversal over syntactic trees, designing a set of transition actions to find a compromise between bottom-up constituent information and top-down lookahead information. Based on stack-LSTM, our psycholinguistically motivated constituent parsing system achieves 91.8 F1 on the WSJ benchmark. Furthermore, the system achieves 93.6 F1 with supervised reranking and 94.2 F1 with semi-supervised reranking, which are the best results on the WSJ benchmark.",
+}
+@article{fried2017improving,
+  title={Improving neural parsing by disentangling model combination and reranking effects},
+  author={Fried, Daniel and Stern, Mitchell and Klein, Dan},
+  journal={arXiv preprint arXiv:1707.03058},
+  year={2017}
+}
+@article{DBLP:journals/jphil/Benthem91,
+  author    = {Johan van Benthem},
+  title     = {Language in action},
+  journal   = {J. Philosophical Logic},
+  volume    = {20},
+  number    = {3},
+  pages     = {225--263},
+  year      = {1991}
+}
+@article{adamW,
+  title={Fixing weight decay regularization in adam},
+  author={Loshchilov, Ilya and Hutter, Frank},
+  journal={arXiv preprint arXiv:1711.05101},
+  year={2017}
+}
+@inproceedings{gru,
+    title = "Learning Phrase Representations using {RNN} Encoder{--}Decoder for Statistical Machine Translation",
+    author = "Cho, Kyunghyun  and
+      van Merrienboer, Bart  and
+      Gulcehre, Caglar  and
+      Bahdanau, Dzmitry  and
+      Bougares, Fethi  and
+      Schwenk, Holger  and
+      Bengio, Yoshua",
+    booktitle = "Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing ({EMNLP})",
+    month = oct,
+    year = "2014",
+    address = "Doha, Qatar",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/D14-1179",
+    doi = "10.3115/v1/D14-1179",
+    pages = "1724--1734",
 }

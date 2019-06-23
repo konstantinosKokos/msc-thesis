@@ -19,7 +19,6 @@
 \usepackage{stmaryrd}
 % theorem
 \newtheorem{defn}{Definition}[section]
-% decorated arrow
 % Decorated Arrow
 \newlength{\arrow}
 \settowidth{\arrow}{\scriptsize$10$}
@@ -27,7 +26,7 @@
 % box
 \setlength{\fboxsep}{2pt}
 
-
+\usepackage{rotating}
 
 % color
 \usepackage{color}
@@ -49,6 +48,9 @@
 % gloss
 \usepackage{linguex} 
 
+% epi
+\usepackage{epigraph}
+
 % tabular
 \usepackage{tabularx}
 \usepackage{booktabs}
@@ -63,9 +65,74 @@
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 
+% spacing
+\usepackage{setspace}
+
+% % % % % envs
+% abstract env
+\newenvironment{abstract}%
+    {\cleardoublepage\thispagestyle{empty}\null\vfill\begin{center}%
+    \bfseries\abstractname\end{center}}%
+    {\vfill\null}
+\newcommand\abstractname{Abstract}
+% ack env
+\newenvironment{acknowledgements}%
+    {\cleardoublepage\thispagestyle{empty}\null\vfill\begin{center}%
+    \bfseries Acknowledgements\end{center}}%
+    {\vfill\null}
+    
+
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+	\centering
+	\includegraphics[width=0.15\textwidth]{Figures/uu.png}\par\vspace{1cm}
+	%{\scshape\LARGE Utrecht University \par}
+	%\vspace{1cm}
+	%{\scshape\Large Final year project\par}
+	\vspace{1.5cm}
+	{\huge THESIS TITLE\par}
+	\vspace{2cm}
+	{\Large Submitted by \\
+	\vspace{1.6em}
+	 Konstantinos Kogkalidis}
+	 \vspace{2cm}
+	 
+	 {In partial fullfillment of the requirements\\
+	 \vspace{1.6em}
+	 For the Master's Degree in: Artificial Intelligence  \\
+	 \vspace{1.6em}
+	 Utrecht University \\
+	 \vspace{1.6em}
+	 June 2019
+	 }
+	\vfill
+	\begin{flushleft}
+	Master's Committee: \\
+	\quad\quad	Project Supervisor: Michael Moortgat \\
+	\quad\quad	Second Examiner: Tejaswini Deoskar
+	\end{flushleft}
+
+\end{titlepage}
+
+\begin{abstract}
+This thesis is concerned with type-logical grammars and their practical applicability as tools of reasoning about sentence syntax and semantics.
+The focal point is narrowed to Dutch, a language notorious for its word order freedom.
+In order to overcome the inherent difficulties arising as a result of that freedom, the thesis explores and expands upon a type grammar based on Intuitionistic Linear Logic, agnostic to word order but enriched with decorations that reduce its proof-theoretic complexity.
+An algorithm for the conversion of dependency-annotated sentences into type sequences is then implemented, populating the abstract framework with concrete, data-driven lexical types.
+Two experiments are ran on the resulting grammar instantiation.
+The first pertains to the learnability of the type-assignment process by a neural architecture. 
+A novel, highly accurate model is proposed, exhibiting remarkable generalization by not being confined to a pre-specified type vocabulary.
+The second revolves around a deductive parsing system that can resolve structural ambiguities by consulting both word and type information; preliminary results suggest both high efficiency and performance.
+\end{abstract}
+
+\begin{acknowledgements}
+thanks mum
+\end{acknowledgements}
+
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
 
 \tableofcontents
 \listoftables
@@ -81,6 +148,8 @@
 \input{Chapters/supertagging.tex}
 
 \input{Chapters/parsing.tex}
+
+\input{Chapters/conclusion.tex}
 
 \bibliographystyle{alpha}
 \bibliography{sources}

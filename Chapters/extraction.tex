@@ -168,10 +168,6 @@ Figure~\ref{fig:lassy_sentence_lens} displays the cumulative distribution of sen
 \end{figure}
 
 \section{Extraction Process}
-% We can now move to describing the algorithmic framework designed for the extraction process.
-% We will start with an exposition of the general algorithm, momentarily assuming full compatibility between the input and its internal routines.
-% This compatibility is ensured through a means of pre-processing steps and added subroutines for exceptional case management, detailed immediately after the extraction's core is presented.
-
 \subsection{Extraction Algorithm}
 \label{subsec:extraction_alg}
 Algorithms~\ref{alg:utils} and~\ref{alg:ra} summarize the type-assignment process, subdivided into components. 
@@ -371,7 +367,7 @@ The extraction algorithm, as specified earlier, makes a few assumptions pertaini
 In order to bring the corpus to a format that is maximally compatible with the algorithm, a series of preprocessing steps, in the form of conversions of the original annotation, become necessary.
 In addition, on several occasions correct type inference requires a few alterations to the general algorithm flow, implemented in the form of conditional case management.
 The paragraphs below detail these transformations and exceptions.
-For most transformations a visual example is provided, depicting the derivation's DAG before and after its application.
+Most transformations are accompanied by an example of their application on an actual corpus sample (identified by its filename), visualizing their effect on the parse DAG.
 
 \paragraph{From Trees to DAGs}
 To begin with, ``phantom'' nodes are useful for maintaining a tree-like view of the DAG, but are otherwise hard to utilize.
@@ -401,7 +397,7 @@ An example of the transformation is presented in Figure~\ref{fig:abstract_arg}.
         \includegraphics[scale=0.49]{Figures/abs2.pdf}
         \caption{After removal}
     \end{subfigure}\vfill
-    \caption[Abstract Semantic Argument Removal]{Derivation structure before (a) and after (b) abstract semantic argument removal for the sentence ``het schilderij wordt verstopt'' (\textit{The painting was hidden}). The phrase ``het schilderij'' acts as both a subject argument for the main sentence verb ``is'' and the understood object for the participial head ``verstopt''. After the transformation, the second dependency is erased.}
+    \caption[Abstract Semantic Argument Removal]{Derivation structure before (a) and after (b) abstract semantic argument removal for the sentence ``het schilderij wordt verstopt'' (\textit{The painting was hidden}) [\texttt{wiki-9720.p.23.s.1}]. The phrase ``het schilderij'' acts as both a subject argument for the main sentence verb ``is'' and the understood object for the participial head ``verstopt''. After the transformation, the second dependency is erased. }
     \label{fig:abstract_arg}
 \end{figure}
 
@@ -428,7 +424,7 @@ An example of the transformation is shown in Figure~\ref{fig:invdet}.
         \includegraphics[scale=0.48]{Figures/invdet2.pdf}
         \caption{After swapping}
     \end{subfigure}
-    \caption[Noun-Phrase Head Swapping]{Dependency relation naming before (a) and after (b) swapping noun-phrase heads for the example sentence ``Vet heeft geen smaak' (\textit{Fat has no taste}). The pronoun ``geen'' acts as a determiner to the noun-phrase ``geen smaak''. After the transformation, it is assigned the head role, with the noun-phrase being assigned the dual label \textit{invdet}.}
+    \caption[Noun-Phrase Head Swapping]{Dependency relation naming before (a) and after (b) swapping noun-phrase heads for the example sentence ``Vet heeft geen smaak' (\textit{Fat has no taste}) [\texttt{WR-P-P-I-0000000130.p.1.s.1}]. The pronoun ``geen'' acts as a determiner to the noun-phrase ``geen smaak''. After the transformation, it is assigned the head role, with the noun-phrase being assigned the dual label \textit{invdet}.}
     \label{fig:invdet}
 \end{figure}
 
@@ -459,7 +455,7 @@ Functionally, it is as a marking above the logical language, denoting that this 
         \includegraphics[scale=0.48]{Figures/tw_to_mod2.pdf}
         \caption{After renaming}
     \end{subfigure}
-    \caption[Numeral Determiner Relabeling]{Dependency relation naming before (a) and after (b) the transformation of numeral determiners into modifiers for the example sentence ``kennen jullie de drie geheimen'' (\textit{do you know the three secrets}). Before the renaming, the numeral ``drie'' acts as an additional determiner for the noun-phrase ``de drie geheimen''. After the transformation, its dependency is altered to a modifier.}
+    \caption[Numeral Determiner Relabeling]{Dependency relation naming before (a) and after (b) the transformation of numeral determiners into modifiers for the example sentence ``kennen jullie de drie geheimen'' (\textit{do you know the three secrets}) [\texttt{WR-P-P-B-0000000001.p.90.s.1}]. Before the renaming, the numeral ``drie'' acts as an additional determiner for the noun-phrase ``de drie geheimen''. After the transformation, its dependency is altered to a modifier.}
     \label{fig:tw_to_mod}
 \end{figure}
 
@@ -508,7 +504,7 @@ An example of the transformation is presented in Figure~\ref{fig:mwu}.
         \includegraphics[scale=0.48]{Figures/mwu2.pdf}
         \caption{After collapse}
     \end{subfigure}
-    \caption[Multi-Word Unit Collapse]{Derivation structure before (a) and after (b) the collapse of a mwu sub-DAG into a single for the example sentence ``Dit zijn zogenaamde shared service centers'' (\textit{These are so-called shared service centers}). Prior to the transformation, the phrase ``shared service centers'' is annotated as a sequence of nodes, rooted to a common ancestor. After the transformation, the three nodes are chunked into a single node that spans all three lexical items. The phrasal category of the new node is inferred by majority voting over its original children.}
+    \caption[Multi-Word Unit Collapse]{Derivation structure before (a) and after (b) the collapse of a mwu sub-DAG into a single for the example sentence ``Dit zijn zogenaamde shared service centers'' (\textit{These are so-called shared service centers}) [\texttt{dpc-ibm-001315-nl-sen.p.85.s.1}]. Prior to the transformation, the phrase ``shared service centers'' is annotated as a sequence of nodes, rooted to a common ancestor. After the transformation, the three nodes are chunked into a single node that spans all three lexical items. The phrasal category of the new node is inferred by majority voting over its original children.}
     \label{fig:mwu}
 \end{figure}
 
@@ -637,7 +633,7 @@ Since the modifier is now applied on the higher level, there is no added ambigui
         \includegraphics[scale=0.46]{Figures/cnj_mod2.pdf}
         \caption{After reattachment}
     \end{subfigure}
-    \caption[Conjunction Modifier Reattachment]{Derivation structure before (a) and after (b) reattachment of shared modifiers for the conjunction ``onderdelen en toebehoren voor machines'' (\textit{parts and accessories for machines}). The transformation detaches the prepositional phrase ``voor machines'' from the two conjuncts it modifies, and connects it once as a daughter of the conjunction node.}
+    \caption[Conjunction Modifier Reattachment]{Derivation structure before (a) and after (b) reattachment of shared modifiers for the conjunction ``onderdelen en toebehoren voor machines'' (\textit{parts and accessories for machines}) [\texttt{WR-P-E-H-0000000052.p.689.s.1}]. The transformation detaches the prepositional phrase ``voor machines'' from the two conjuncts it modifies, and connects it once as a daughter of the conjunction node.}
 \end{figure}
 
 \subparagraph{Argument Copying} 
@@ -657,7 +653,7 @@ Aside from that, ILL provides another direct solution in virtue of the tensor ($
 Rather than enhancing the logic with the pair type and altering the functor type, we may instead utilize an equivalent implicational type.
 That is:
 \[
-A_1, A_N \vdash (A_1 \rightarrow \dots \rightarrow A_N \rightarrow C) \rightarrow C
+A_1, \dots, A_N \vdash (A_1 \rightarrow \dots \rightarrow A_N \rightarrow C) \rightarrow C
 \]
 which states that from a sequence of assumptions $A_1$,\dots $A_N$, one can derive a higher-order function that accepts a curried function from the sequence to $\Gamma$ to produce a $\Gamma$.
 This higher-order proposition at the right hand side of the turnstile is now the instantiating type for the polymorphic coordinator.
@@ -808,8 +804,8 @@ The per-sample processing scheme, in combination with lazy evaluation and on-dem
 
 Finally, the extraction boasts minimal system requirements but near-perfect utilization of additional computational resources, despite its complex nature; the whole of Lassy-Small can fully processed in under 2 minutes using a commercial grade computer.
 
-\section{Conclusion}
-This section presented the means through which our type-logical grammar, as specified in Chapter~\ref{chapter:tlg}, can be experimentally aligned with real-world data via the means of an extraction algorithm.
+\section{Summary}
+This chapter presented the means through which our type-logical grammar, as specified in Chapter~\ref{chapter:tlg}, can be experimentally aligned with real-world data via the means of an extraction algorithm.
 We reviewed the algorithm that accomplishes this alignment, the difficulties that may arise in such a process and the transformations required to adopt Lassy's dependency annotations into grammar-compatible structures.
 The resulting treebank combines the high-quality of the Lassy-Small with a highly refined type-system, and offers itself for many practical and theoretical applications, ranging from supertagging and constituency parsing to semantic analysis and statistical models of the language as a whole.
 It is our hope that as the extraction gets further refined, its output will arise as a useful, publicly available linguistic resource that can act as the groundwork for further research endeavours.

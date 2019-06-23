@@ -1,0 +1,25 @@
+\chapter{Conclusion}
+\label{chapter:conclusion}
+This thesis set out to design, extract and experimentally validate a type-logical grammar for written Dutch, aimed towards semantic compositionality.
+
+We began by introducing type-logical grammars and the recurring patterns within them.
+Having weighted the pros and cons between established variants, we chose to base our grammar on the Lambek-van Benthem Calculus.
+This decision gave our grammar a direct equivalence to the simply-typed $\lambda$-calculus, making it highly fitted for future semantic interpretations.
+It also trivialized the treatment of crossing and long-range dependencies, as well as any issues pertaining to the infamous Dutch word order freedom.
+At the expense of these benefits, our type logic becomes hard to perform proof-search over and permits more derivations than the language allows.
+To reconcile these shortcomings, we enriched the logic with dependency annotations, anticipating their future utilization in coordination with word-level information.
+
+Next, we implemented an algorithm tasked with performing type assignments on the syntactically annotated sentences of Lassy, the written Dutch corpus, according to our type logic.
+To ameliorate incompatiblities between our desired analyses and the ones provided by the corpus, we layed out a number of corpus transformation, each specific to a particular syntactic construction.
+By applying them to the corpus we utilized otherwise unusable sentences, ensuring the maximum number of type assignments without making any compromises on their quality.
+
+Albeit our designed grammar's lack of directionality, the type system still proved highly refined, owing to the numerous dependency decorations and atomic types but also the large variety in type structures.
+Its fine-grained nature had the side effect of a previously unseen degree of type sparsity, challenging its learnability by standard supertagging architectures.
+Rather than ignore rare types or artificially deflate the type system's complexity, we proposed a generative, attention-based supertagging architecture.
+Our model proved able to fully acquire the type syntax, learning to construct types inductively, thus bypassing the inherent limitations of established models with respect to type sparsity.
+
+Finally, in order to ascertain the type system's potential as a backbone to parsing, we ran some first experiments on backwards proof-search using a simple recurrent architecture, simultaneously informed by word- and type-level information.
+The network proved highly optimal, both in terms of computational efficiency and raw performance.
+Although incomplete, these first results suggest that, despite their lack of directionality, our grammar's types suffice for structural disambiguation, when used in tandem with the lexical content of a sentence.
+
+To review, this thesis has produced a dependency-aware type-logical grammar variant, a means for its data-driven extraction, a methodology for constructive supertagging and a (still in the works) framework for structurally ambiguous type-logical parsing.

@@ -1,5 +1,5 @@
 \chapter{Supertagging}
-This chapter is an extended version of~\cite{constructive}.
+This chapter is an extended version of~\cite{constructive}, to be presented in the fourth workshop on Representation Learning for NLP (REPL4NLP).
 
 \section{Background}
 The extraction algorithm, as described in Chapter~\ref{chapter:extraction}, produces a type-annotated DAG.
@@ -157,7 +157,7 @@ Then, the grammar materializes using just two meta-rules for productions:
 \label{eqn:cfg}
 \end{align}
 where $S$ is the initial symbol and the only non-terminal, $\implies$ is the CFG production arrow, $\mathcal{A}$ is the set of terminals corresponding to atomic types, and $\mathcal{D}$ is the set of terminals corresponding to named implication arrows.
-Under this light, types are no more than words of the type-forming language.
+In this light, types are no more than words of the type-forming language.
 
 Of course, the CFG specified above is particular to our type system.
 However, any logically grounded categorial grammar is associated with one; consequently, the methodology to be described next is applicable to other formalisms as well. 
@@ -670,7 +670,7 @@ Together, the results indicate that the type-syntax is not only learnable, but a
 
 \paragraph{Baselines}
 In order to evaluate our model's performance in comparison to established supertagging practices, we experimented with RNN-based encoder-decoder architectures. 
-We tried training a single-layer BiGRU encoder over the ELMo representations, connected to a single-layer GRU decoder, following~\cite{encdec}; the model took significantly longer to train and yielded far poorer results.
+We tried training a single-layer BiGRU encoder over the ELMo representations, connected to a single-layer GRU decoder, following~\cite{gru}; the model took significantly longer to train and yielded far poorer results.
 We hypothesize that the encoder's fixed length representation is unable to efficiently capture all of the information required for decoding a full sequence of atomic symbols, inhibiting learning.
 
 As an alternative, we tried a separable LSTM decoder operating individually on the encoder's representations of each word. 
@@ -742,8 +742,8 @@ Considering that dense supertag representations have been shown to benefit parsi
     \label{fig:symbol_tsne}
 \end{figure}
 
-\section{Conclusion} 
-This section presented supertagging and its evolution during the last two decades.
+\section{Summary} 
+This chapter presented supertagging and its evolution during the last two decades.
 We saw how supertagging is a crucial component to categorial parsing, and the means through which it may become more generally applicable and accurate.
 Our novel contribution lies in the subtle reformulation of the supertagging task, from sequence labeling to sequence transduction.
 Such a reformulation, paired with the strong idea of self-attention and an encoder-decoder architecture allowed us to lift the closed-world assumption, yielding a highly general architecture capable of dynamically constructing types beyond a prespecified lexicon.
