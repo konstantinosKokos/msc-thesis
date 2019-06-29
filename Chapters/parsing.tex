@@ -16,6 +16,10 @@ In light of the above, we take an alternative approach towards parsing that seek
 The key insight is that a parse is a proof, and a proof is simply a sequence of logical rule applications.
 If we were to model these rules, namely implication introduction and elimination, and follow them in a backwards-search fashion, we would obtain a proof-faithful parser.
 
+An alternative problem formulation arises if one adopts an Abstract Categorial Grammar (ACG) perspective~\cite{de2001towards}.
+In brief, ACG posits the modeling of syntax as the homomorphic translation from a source ``abstract'' logic, which specifies syntactic relations by assigning MILL types to lexical constants, onto a target ``surface'' grammar, which specifies the realization of these abstract syntactic elements as strings and functions over them.
+From this viewpoint, our types are (dependency-enhanced) abstract syntactic types of the source logic; what remains to be done is to provide (or rather, learn) the postulated homomorphism that accomplishes the translation onto the surface strings.
+
 With the above in mind, we draw an abstract picture of a backwards-search parsing process in Algorithm~\ref{alg:parse}.
 
 \begin{algorithm}{
@@ -107,6 +111,8 @@ A visual presentation of the network is shown in Figure~\ref{fig:elimnet}.
 We use a 1-layer unidirectional GRU with an input and hidden dimensionality of 1024 as our type embedder.
 For the premise-level GRU, we set its hidden dimensionality to 256, its number of layers to 2 and apply a recurrent dropout of 0.5 for regularization.
 We train our network using a cross-entropy loss and an AdamW optimizer \cite{adamW} with a learning rate of 10${}^{-3}$ and a weight decay of 10${}^{-4}$.
+The source code for the model described can be found at \url{https://github.com/konstantinosKokos/Lassy-TLG-Parsing}.
+
 
 \paragraph{Training}
 To train the network, we precompute the contextualized vectors for each word participating in an elimination. 
@@ -256,6 +262,6 @@ Nevertheless, these first results testify to the strength of the general approac
 
 \section{Summary}
 In this chapter, we introduced an abstract framework for the construction of type-logical proofs in a backwards fashion.
-We then instantiated this framework with a basic goal inference component capable of dealing with a portion of possible input judgements and an elimination component in the form of a simple recurrent network.
+We then instantiated this framework with a basic goal inference component capable of dealing with a portion of possible input judgements, and an elimination component in the form of a simple recurrent network.
 This elementary instantiation serves as a concrete proof-of-concept rather than a completely developed parser.
 Yet, its very high preliminary results are a clear indication that efficient and highly accurate parsing with our undirectional type logic (and the type lexicon extracted) is within reach.

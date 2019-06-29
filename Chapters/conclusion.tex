@@ -5,7 +5,7 @@ This thesis set out to design, extract and experimentally validate a type-logica
 We began by introducing type-logical grammars and the recurring patterns within them.
 Having weighted the pros and cons between established variants, we chose to base our grammar on the Lambek-van Benthem Calculus.
 This decision gave our grammar a direct equivalence to the simply-typed $\lambda$-calculus, making it highly fitted for future semantic interpretations.
-It also trivialized the treatment of crossing and long-range dependencies, as well as any issues pertaining to the infamous Dutch word order freedom.
+It also trivialized the treatment of crossing and long-range dependencies, as well as any issues pertaining to word order permutations.
 At the expense of these benefits, our type logic becomes hard to perform proof-search over and permits more derivations than the language allows.
 To reconcile these shortcomings, we enriched the logic with dependency annotations, anticipating their future utilization in coordination with word-level information.
 
@@ -23,3 +23,19 @@ The network proved highly optimal, both in terms of computational efficiency and
 Although incomplete, these first results suggest that, despite their lack of directionality, our grammar's types suffice for structural disambiguation, when used in tandem with the lexical content of a sentence.
 
 To review, this thesis has produced a dependency-aware type-logical grammar variant, a means for its data-driven extraction, a methodology for constructive supertagging and a (still in the works) framework for structurally ambiguous type-logical parsing.
+
+\paragraph{Future Directions}
+Some of the research questions posed have only been given partial answers.
+Regarding parsing, it remains to be seen how to best integrate supertagging and parsing, and how to overcome the limitations of the current parsing framework.
+Regarding the extraction, further work on exception cases would now yield diminishing returns; however, any bit of extra coverage, no matter how small, is worth the effort as it turns the grammar more general.
+Investigating non-compositional phenomena (i.e. unheaded structures) is also an open challenge.
+A great degree of empirical experimentation may still be performed over the extraction parameters (e.g. reducing the range of the atomic type or implication label translation tables) to evaluate their effect on downstream tasks.
+On a related note, a sanity check could be carried out using pure ILL types to assert the significance of the dependency decorations in parsing.
+The positive effect is an opposing force to the type system's complexity (and the associated drops in supertagging accuracy); thus the two need to be carefully weighed to find an optimal balance.
+
+Aside from these questions, the thesis opens many possible directions for future explorations.
+Given the experimentally validated treebank, the principal focus now turns on how to best utilize type-logical derivations and their corresponding computational terms to inform semantics; i.e. which candidate semantic interpretations exist for our types and their interactions, and how can they best benefit from this work?
+Moreover, it is important to consider the broader applicability of the methods presented; e.g. whether other languages could benefit from non-directional type logics, or other grammar formalisms from a constructive supertagging paradigm.
+
+Such inquiries are no small endeavour and could not be fit under a single thesis.
+We hope, however, to have sufficiently motivated the interested reader in pondering the beauty of a type-theoretic view on language, the means through which it can be practically employed and its potential implications for large-scale natural language processing.

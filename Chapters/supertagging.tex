@@ -1,4 +1,5 @@
 \chapter{Supertagging}
+\label{chapter:sup}
 This chapter is an extended version of~\cite{constructive}, to be presented in the fourth workshop on Representation Learning for NLP (REPL4NLP).
 
 \section{Background}
@@ -166,7 +167,7 @@ However, any logically grounded categorial grammar is associated with one; conse
 This intuition exposes a range of alternative perspectives.
 To begin with, it has been shown that neural networks are capable to implicitly acquire context-free languages, both as recognizers and generators~\cite{noPhysics}.
 Additionally, state of the art supertagging architectures can already perform the context-sensitive type-assignment process.
-It is therefore reasonable to expect that, given enough representational capacity and a robust training process, a network should be able to learn the composition of the two tasks; namely, a context-free grammar embedded within a broader labeling task.
+It is therefore reasonable to expect that, given enough representational capacity and a robust training process, a network should be able to jointly learn the two tasks; namely, a context-free grammar embedded within a broader labeling task.
 A joint acquisition of the two amounts to learning a) how to produce types (including novel ones), and b) which types to produce under different contexts.
 Successfully doing both provides the means for an unrestricted codomain supertagger.
 
@@ -446,6 +447,8 @@ An abstract schematic view of the Transformer is given in Figure~\ref{fig:transf
 The supertagging model's architecture follows the standard encoder-decoder paradigm commonly employed by sequence-to-sequence models. 
 It accepts a sequence of words as input, and produces a longer sequence of atomic symbols as output.
 A high-level overview, together with an example input/output pair, are presented in Figure~\ref{fig:modelandio}.
+The source code for our model is publicly available and can be found at \url{https://github.com/konstantinosKokos/Lassy-TLG-Supertagging}.
+The custom implementation of the Transformer used by the model can be found at \url{https://github.com/konstantinosKokos/UniversalTransformer}.
 
 \begin{figure}
 \centering
@@ -734,17 +737,17 @@ We can extract this layer's outputs to generate vectorial representations of ato
 Figure~\ref{fig:symbol_tsne} displays a 2-dimensional tSNE~\cite{maaten2008visualizing} reconstruction of the embedding space, where some degree of structure is immediately apparent.
 Considering that dense supertag representations have been shown to benefit parsing~\cite{kasai-etal-2017-tag}, our atomic symbol embeddings may be further utilized by downstream tasks, as a highly refined source of type-level information.
 
-\begin{figure}
+\begin{figure}[t]
     \centering
     \hspace{-70pt}
-    \includegraphics[scale=0.28]{Figures/cluster.pdf}
-    \caption[tSNE of Atomic Symbol Embeddings]{2-d tSNE projection of the embedding space. Two major clusters are formed by binary connectives (east) and atomic types (west). Smaller clusters are also noticeable between sentential types, indirect verb arguments, secondary clauses, complementizers, preliminary arguments, phrasal types etc.}
+    \includegraphics[scale=0.29]{Figures/cluster.pdf}
+    \caption[tSNE of Atomic Symbol Embeddings]{2-d tSNE projection of the embedding space. Two major clusters are formed by binary connectives (lowercase, east) and atomic types (uppercase, west). Smaller clusters are also noticeable between sentential types, indirect verb arguments, secondary clauses, complementizers, preliminary arguments, phrasal types etc. Refer to Tables~\ref{table:lex}, \ref{table:colors} for a legend.}
     \label{fig:symbol_tsne}
 \end{figure}
 
 \section{Summary} 
 This chapter presented supertagging and its evolution during the last two decades.
 We saw how supertagging is a crucial component to categorial parsing, and the means through which it may become more generally applicable and accurate.
-Our novel contribution lies in the subtle reformulation of the supertagging task, from sequence labeling to sequence transduction.
+Our novel contribution lies in the reformulation of the supertagging task, from sequence labeling (with labels being the type vocabulary) to sequence transduction (with outputs being the elements primitive to type construction).
 Such a reformulation, paired with the strong idea of self-attention and an encoder-decoder architecture allowed us to lift the closed-world assumption, yielding a highly general architecture capable of dynamically constructing types beyond a prespecified lexicon.
 This work shows that the type-forming syntax internal to categorial grammars can be fully acquired by neural networks, bypassing the limiting factor of type sparsity, and paving the way for exploring the realistic applications of richer type systems in natural language parsing.

@@ -22,7 +22,7 @@ The key insight of Type-Logical Grammars and their distinguishing feature is the
 Lambek was the first to notice that categories may be perceived as logical formulas, and type-forming operators as logical connectives~\cite{lambek1958mathematics}.
 Parsing is then lifted from arbitrary schematic rule application to a process of deductive inference, as driven by an underlying logic.
 This yields a number of benefits which will be clarified later; for now, it is worth noting the flexibility inherent to such an approach.
-Altering the choice of logic gives rise to a different grammar, so a new grammar may be designed for particular use-cases by a adopting an appropriate logic.
+Altering the choice of logic gives rise to a different grammar instance, so one may be designed for particular use-cases by a adopting an appropriate logic.
 As such, Type-Logical Grammars form a wide landscape which encompasses many formalisms which may differ in their properties but all share a proof-theoretic perspective on parsing.
 
 \subsection{Type-Logical Grammars}
@@ -30,7 +30,7 @@ Although a full exposition and comparison between the various incarnations of Ty
 
 \paragraph{Lambek Calculus}
 We begin with a brief description of what has come to be known as the Lambek Calculus (L)~\cite{lambek1958mathematics}, which built upon AB Grammars~\cite{bar1953quasi} in providing them with a logical formalization.
-Categories are defined as follows:
+In the implication-only fragment which is of interest here, categories are defined as follows:
 \[
 \textsc{c} := \textsc{a} \ | \ \textsc{c}_1/\textsc{c}_2 \ | \ \textsc{c}_1 \backslash \textsc{c}_2
 \]
@@ -69,7 +69,7 @@ plus the identity Axiom:
 \[
 \infer{A \vdash A}{}\tag{Ax.}
 \]
-where $A$, $B$ are formulas (i.e. categories) and $\Gamma$, $\Delta$ are sequences of formulas. 
+where $A$, $B$ are formulas (i.e. categories) and $\Gamma$, $\Delta$ are non-empty sequences of formulas. 
 A statement of the form $\Gamma \vdash A$ is a judgement, expressing that from a sequence of \textit{assumptions} $\Gamma$ one can derive a \textit{conclusion} formula $A$.
 
 The first line presents the slash and backslash Elimination rules, where $/E$ ($\backslash E$) states that if one has a proof of a formula $B/A$ ($A \backslash B$) from assumptions $\Gamma$ and a proof of a formula $A$ from assumptions $\Delta$, then from assumptions $\Gamma$, $\Delta$ ($\Delta$, $\Gamma$) one can derive a formula $B$.
@@ -77,17 +77,6 @@ Note that $\Gamma$, $\Delta$ refers to the concatenation of $\Gamma$ to $\Delta$
 The second line presents the corresponding Introduction rules.
 Now, $/I$ ($\backslash I$) state that if ones know a sequence $\Gamma$, $A$ to derive a $B$, then $A$ may be withdrawn, allowing one to derive $B/A$ ($B \backslash A$) from $\Gamma$ alone.
 Elimination rules are dual to Introduction rules; the first allow the removal of an implicational type by applying it to its argument, whereas the latter create implicational types by abstracting arguments away, giving our logic access to \textit{hypothetical reasoning}.
-
-% syntax ~hom~> semantics
-% non-associative fragment lambek 61
-% structural control modalities
-% practical concesion => BALANCE stricter proof-theoretic properties, larger type-ambiguity (how do we come up with the proper type assignment?)
-% for languages with free word order the type assignments become even harder (either due to modalities or distinct types)
-% => next section: a lax proof-theoretic version that is easier to type-assign
-% dependency informaiton to recover from loss of directionality
-% dependency information ARE modal operators
-% examples
-% potential semantic interpretations..
 
 To illustrate the linguistic relevance of such a grammar, we will take a second  to review how implication types may be used to convey information on sentence structure.
 First off, atomic categories may be seen as structurally complete, independent phrases.
@@ -233,6 +222,7 @@ Under this new regime, called the non-associative Lambek Calculus (NL), the logi
     \end{align*}
     \end{minipage}
 \end{align*}
+where $\circ$ is a binary structure-building operator.
 
 If the Lambek Calculus is a language of \textit{strings}, its non-associative version is the language of \textit{binary branching trees}; it  respects (and requires) the constituent structure of a phrase in providing its derivation.
 
@@ -243,16 +233,16 @@ Associativity and commutativity (in the form of permutation) may be added to the
 \infer{\Gamma[\Delta_1 \circ \Delta_2] \vdash C}{\Gamma[\Delta_2 \circ \Delta_1] \vdash C} \tag{Commutativity}
 \end{align*}
 
-Universally allowing associativity yields a grammar that loses track of constituent structurs, while universal commutativity corresponds to a grammar that completely ignores word order. 
+Universally allowing associativity yields a grammar that loses track of constituent structure, while universal commutativity corresponds to a grammar that completely ignores word order. 
 Disallowing them altogether, on the on other hand, may be too harsh of a measure.
 Notice, for instance, that the example on object-relativisation is no longer derivable without associativity, as seen in Figure~\ref{fig:nl_en:nd}.
 To benefit from associativity and/or commutativity while restraining its applicability to only cases when it really is needed for a derivation, the logic may be expanded with unary modal operators that either allow or block structural rules~\cite{kurtonina1997structural}.
-Structural control modalities improve the logic's proof-theoretic properties -- maximally, the only choices made available during proof search correspond to actual derivational ambiguity (i.e. non spurious).
-That is, if more than one proofs may be devised for a single judgement, they correspond to its different readings.
+Structural control modalities improve the logic's proof-theoretic properties -- maximally, the only choices made available during proof search correspond to actual derivational (i.e. non spurious) ambiguity.
+That is, if more than one proof may be devised for a single judgement, they correspond to its different readings.
 
-To briefly illustrate the point, we can consider a pair of unary operators $\diamondsuit$, $\Box$ forming a residual pair such that $\diamondsuit \Box A \vdash A \vdash \Box \diamondsuit A$, with transitivity only applicable on elements marked with $\diamondsuit$:
+To briefly illustrate the point, we can consider a pair of unary operators $\diamondsuit$, $\Box$ forming a residual pair such that $\diamondsuit \Box A \vdash A \vdash \Box \diamondsuit A$\footnote{N.D. rules for such modalities will be presented in the next section.}, with associativity only applicable on elements marked with $\diamondsuit$:
 \[
-%\infer[A^{\diamondsuit}]{(A\circ B) \circ \diamondsuit C}{A \circ (B \circ \diamondsuit C)}
+\infer[A^{\diamondsuit}]{(A\circ B) \circ \diamondsuit C}{A \circ (B \circ \diamondsuit C)}
 \] 
 
 Then adding the type $(\textsc{np} \backslash \textsc{np}) / (\textsc{s}/\diamondsuit \Box \textsc{np})$ in our lexicon for the word ``which'' re-enables the derivability of the running example in Figure~\ref{fig:nl_en:d}.
@@ -308,60 +298,26 @@ Even though a stricter type system mitigates the difficulty of proof search, the
 As words are assigned more potential types, the lexicon becomes increasingly ambiguous.
 This ambiguity is further exacerbated for languages exhibiting higher degrees of word order freedom, with Dutch being a prime example.
 
-To evaluate what the practical impact of word order freedom is, we will start by making a naive translation of our prior lexicon into Dutch.
-
- \[
- \begin{array}{cc}
- \text{Word} & \text{Category} \\
- \hline
- \text{meisje}\ (\textit{girl}), \ \text{appel} \ (\textit{apple}) & \textsc{n} \\
- \text{kinderen} \ (\textit{children}) & \textsc{np} \\
- \text{het} \ (\textit{the}) , \ \text{een} \ (\textit{an}) & \textsc{np}/ \textsc{n} \\
- \text{spelen} \ (\textit{play}), \ \text{spelt} \ (\textit{plays}) & \textsc{np}\backslash \textsc{s} \\
- \text{at} \ (\textit{ate}) & (\textsc{np} \backslash \textsc{s}) / \textsc{np} \\ 
- \text{dat} \ (\textit{who$^{SG}$}), \ \text{die} \ (\textit{who$^{PL}$}) & (\textsc{np} \backslash \textsc{np}) / (\diamondsuit \Box \textsc{np} \backslash \textsc{s}) \\
- \text{die} \ (\textit{which}) & (\textsc{np} \backslash \textsc{np})/(\textsc{s} / \diamondsuit \Box \textsc{np})
- \end{array}
- \]
-
-Things look promising at first; the sentences ``kinderen spelen'' (\textit{children play}) and ``het meisje at een appel''  (\textit{the girl ate an apple}) are derivable, and so is the phrase ``die spelen'' (\textit{who play}), with proofs identical to the first three of Figure~\ref{fig:lambek_en}.
-However, we reach an impasse when trying to create a proof for ``dit een appel at'' (\textit{that ate an apple}) with our current lexicon, even with our transitivity-licensing relativiser, as shown in Figure~\ref{fig:nl_dutch}.
-\begin{figure}
-	\centering
-		\[
-		\infer[/E]{(\text{dat} \circ ((\text{een} \circ \text{appel}) \circ \text{at})) \vdash \textsc{np}\backslash \textsc{np}}{
-			\infer[L]{\text{dat} \vdash (\textsc{np} \backslash \textsc{np}) / (\diamondsuit \Box \textsc{np} \backslash \textsc{s})}{}
-			&
-			\infer[\backslash I]{((\text{een} \circ \text{appel}) \circ \text{at}) \vdash \diamondsuit \Box \textsc{np}\backslash \textsc{s}}{
-				\infer[A^\diamondsuit]{(\diamondsuit \Box \textsc{np} \circ ((\text{een} \circ \text{appel}) \circ \text{at}))}{
-					\infer[]{((\diamondsuit \Box \textsc{np} \circ (\text{een} \circ \text{appel})) \circ \text{at})}{\lightning}
-				}
-			}
-		}
-		\]
-\caption[Failing NL Derivation]{Non-derivable subject-relativisation example in Dutch.}
-\label{fig:nl_dutch}
-\end{figure}
-The issue arises because relativisation in Dutch is verb-final, requiring either the additional type $\textsc{np}\backslash(\textsc{np}\backslash\textsc{s})$ for transitive verbs, or modal decorations for conditional commutativity and associativity that would allow the hypothetical noun-phrase to move unhindered through the proof until it finds its correct position.
-
-Similar complications are common, drastically increasing the complexity required of the type system if we want proof search to remain deterministic.
+When concerned with relativisation, for instance, which in Dutch is verb-final, we need to either include the second type $\textsc{np}\backslash(\textsc{np}\backslash\textsc{s})$ for transitive verbs, or modal decorations for conditional commutativity and associativity that would allow a hypothetical noun-phrase to move unhindered through the proof until it finds its correct position.
+Other permutations are yet possible in the context of inverted clauses, or wh- and yes/no-questions.
+The recurrence and variety of these complications can vastly increase the complexity of the type system, if we wish proof search to remain deterministic.
 This complexity can become unwieldy when dealing with large-scale corpora, owing mostly to the potentially immense size (and therefore ambiguity) of the lexicon, but also the considerable difficulty of populating such a lexicon in the first place.
-Consequently, there is a balance between to be sought between the formal well-behavedness of the grammar and its practical applicability.
-
-
+Consequently, there is a balance to be sought between the formal well-behavedness of the grammar and its practical applicability.
 
 \section{A TLG for Semantic Compositionality}
 \subsection{Intuitionistic Linear Logic}
 The above considerations, combined with our goal of constructing a wide-coverage grammar for Dutch, draws our attention towards LP, otherwise known as the Lambek-van Benthem Calculus~\cite{van1988semantics}.
-LP coincides with the implication-only fragment of Intuitionistic Linear Logic (ILL)~\cite{girard1987linear} the notation of which is adopted for the purposes of this presentation.
-ILL is in many ways reminiscent of the Lambek Calculus as shown earlier; the two logical connectives of $/$ and $\backslash$ are collapsed into a single, direction-agnostic implication $\rightarrow$ (an alternative notation is $\multimap$).
-Types are then inductively defined as:
+LP coincides with the implication-only fragment of Multiplicative Intuitionistic Linear Logic (MILL)~\cite{girard1987linear} the notation of which is adopted for the purposes of this presentation.
+MILL is closely related to the Lambek Calculus shown earlier; the two logical connectives of $/$ and $\backslash$ are collapsed into a single, direction-agnostic implication $\rightarrow$ (an alternative notation is $\multimap$).
+Similar approaches to syntactic analysis were foreboded by early proponents, as in~\cite{curry1961some} and their contemporary incarnations of Lambda Grammars~\cite{muskens2001lambda} and Abstract Categorial Grammars ~\cite{de2001towards}; the relation between these and the approach presented here will be briefly examined in Chapter~\ref{chapter:parsing}. 
+
+MILL implication types are inductively defined as:
 \[
 \textsc{t} := \textsc{a} \ | \ \textsc{t}_1 \to \textsc{t}_2 
 \]
 where again $\textsc{a}$ is an atomic type and $\textsc{t}_1$, $\textsc{t}_2$ are types.
 
-The implication rules and identity axiom of ILL are presented below:
+The implication rules and identity axiom of MILL are presented below:
 
 \begin{center}
 \begin{minipage}{0.5\textwidth}
@@ -389,12 +345,13 @@ The implication rules and identity axiom of ILL are presented below:
     \end{minipage}
 \end{align*}
 
-Note that rather than the sequences of L or binary branching structures of NL, the assumptions of a judgement in ILL are now \textit{multisets}; $\Gamma$, $\Delta$ is then read as the multiset union of $\Gamma$ with $\Delta$ and is equivalent to $\Delta$, $\Gamma$.
+Note that rather than the sequences of L or binary branching structures of NL, the assumptions of a judgement in MILL are now \textit{multisets}; $\Gamma$, $\Delta$ is then read as the multiset union of $\Gamma$ with $\Delta$ and is equivalent to $\Delta$, $\Gamma$.
 In practical terms, this means that both associativity and commutativity are admitted as holding universally; neither structure nor word order are taken into account when deriving a sentence\footnote{For non-native Dutch speakers, this may at times feel as less of a concession and more of a postulate.}.
+In other words, a single type may be used to present multiple versions of functors that would previously differ depending on the variations over their arguments' positions.
 
 \paragraph{The Curry-Howard Correspondence}
 The Curry-Howard Correspondence states that logical propositions are in a one-to-one relation with the types of a functional program.
-ILL, in particular, is directly equivalent to the simply-typed linear $\lambda$-calculus~\cite{benton1993term, abramsky1993computational}.
+MILL, in particular, is directly equivalent to the simply-typed linear $\lambda$-calculus~\cite{benton1993term, abramsky1993computational}.
 A proof then encodes a $\lambda$-term which fully specifies the execution of a functional program, and vice-versa.
 Logical connectives are identified with type constructors; specifically, implicational formulas are the type signatures of function spaces. 
 Assumptions are free variables, and the rules of introduction and elimination find their computational analogues in function abstraction and function application, respectively, whereas the identity axiom corresponds to variable instantiation.
@@ -430,15 +387,15 @@ Let's begin by inspecting the logical rules decorated with their corresponding $
 \end{align*}
 
 The identity axiom simply states that we may instantiate a free variable $x$ of type $A$.
-The elimination rule $\rightarrow E$ states that if we have a program that from a set of typed variables $\Gamma$ can produce a function $s$ of type $A \to B$, and a program that from another set $\Delta$ can produce a variable $t$ of type $A$, then $s$ may be applied to $t$ yielding a variable of type $B$.
-Dually, the introduction rule states that from a program that produces a variable $u$ of type $B$ out of a set of variables $\Gamma$ together with a variable $x$ of type $A$, we can construct a program for a function $A\to B$ by abstracting $x$ away.
+The elimination rule $\rightarrow E$ states that if we have a program that from a typing environment $\Gamma$ (i.e. a set of type-specified variables) can produce a function $s$ of type $A \to B$, and a program that from another set $\Delta$ can produce a variable $t$ of type $A$, then $s$ may be applied to $t$ yielding a variable of type $B$.
+Dually, the introduction rule states that from a program that produces a variable $u$ of type $B$ out of a set of variables $\Gamma$ together with a variable $x$ of type $A$, we can construct a program for a function of type $A\to B$ by abstracting $x$ away.
 
 Recalling that our variables are instantiated by a type lexicon, we can easily shift from syntax to semantics via an isomorphic mapping.
 Concretely, for each lexical type assignment we need also provide a corresponding semantic assignment.
 Then, the process of meaning assembly for a phrase is identical with the execution of the functional program dictated by its syntactic derivation; in other words, we may use the semantic values of our lexicon, applying function-words to their arguments in a hierarchical manner, guided by the $\lambda$-term that encodes the proof structure.
 
 As semantic compositionality is one of the planned applications of our grammar, we will stress this point by providing an abstract example.
-First, let's return to the prior examples, now using an ILL-adapted lexicon\footnote{Throughout the remainder of this thesis, we will use a right-implicit parentheses notation for ILL types; that is, $A\to B \to C$ is read as $A\to (B \to C)$ and is distinct from $(A\to B) \to C$}:
+First, let's return to the prior examples, now using an MILL-adapted lexicon\footnote{Throughout the remainder of this thesis, we will use a right-implicit parentheses notation for MILL types; that is, $A\to B \to C$ is read as $A\to (B \to C)$ and is distinct from $(A\to B) \to C$}:
 
  \[
  \begin{array}{cc}
@@ -525,24 +482,22 @@ Note that the embedded clause example that gave us trouble earlier is now trivia
 			}
 		}
 		\]
-		\caption{Object-relative transitive verb derivation, with $\lambda$-term dit($\lambda x$.((at $x$)(het meisje)))}
+		\caption{Object-relative transitive verb derivation, with $\lambda$-term die($\lambda x$.((at $x$)(het meisje)))}
 		\label{subfig:ill_dutch:obj}
 		\end{subfigure}
-\caption[Example ILL Derivations]{Example derivations in ILL}
+\caption[Example MILL Derivations]{Example derivations in MILL}
 \label{fig:ill_dutch}
 \end{figure}
 
 Now, given a mapping $\lceil .\rceil$ from words to semantic objects, we may obtain a compositionally driven semantic interpretation over larger linguistic units by recursively applying the mapping on the proofs' $\lambda$-terms, e.g.:
 \[
-\lceil \text{dit het meisje at} \rceil = \lceil \text{dit} \rceil (\lambda x. ((\lceil \text{at} \rceil \ x)(\lceil \text{het} \rceil \lceil \text{meisje} \rceil))
+\lceil \text{die het meisje at} \rceil = \lceil \text{die} \rceil (\lambda x. ((\lceil \text{at} \rceil \ x)(\lceil \text{het} \rceil \lceil \text{meisje} \rceil))
 \]
 
 The exact semantic spaces operated on are still open to our creative libery; specifying those escapes the context of this thesis, but the grammar's ability to accommodate a multitude of such spaces is still an important point to consider.
-A final remark to make is that a compositional semantics is not particular to this instantiation of our type-logic. 
-Any Lambek-style calculus can be converted into an ILL program for meaning assembly via a homomorphic translation; the difference here is that this translation is invertible as both syntax and semantics share the same structure.
 
 \subsection{Dependency Refinement}
-Earlier, we saw how ILL simplifies the derivation process for cases that would otherwise require involved structural reasoning.
+Earlier, we saw how MILL simplifies the derivation process for cases that would otherwise require involved structural reasoning.
 The observant reader will, however, have noticed that this laxity can result in erroneous analyses.
 Returning, for instance, to the relativisation examples of Figure~\ref{fig:ill_dutch}, there is no restriction enforcing us to derive the particular proofs presented.
 The proof structure of~\ref{subfig:ill_dutch:sub} could be used in~\ref{subfig:ill_dutch:obj} (and vice-versa), resulting in linguistically inaccurate readings.
@@ -563,7 +518,7 @@ Further, lexical preferences can now be canonically shared across types rather t
 Last but not least, novel usecases for dependency decorations are likely to arise in the context of semantic interpretations.
 
 Of course, this addition is expected to significantly increase the lexicon size.
-However, differently decorated types arising from a single ILL type will really be functionally distinct (both syntactically and semantically), as opposed to simply an artifact of permutation (as would be the case in a directional system).
+However, differently decorated types arising from a single MILL type will really be functionally distinct (both syntactically and semantically), as opposed to simply an artifact of permutation (as would be the case in a directional system).
 Consider, for instance, the case of the relativiser ``die'', which would get the two different types\footnote{The dependency label body refers to relative clause body.} $(\textsc{np}\myrightarrow{su}\textsc{s})\myrightarrow{body}\textsc{np}\myrightarrow{mod}\textsc{np}$ and $(\textsc{np}\myrightarrow{obj}\textsc{s})\myrightarrow{body}\textsc{np}\myrightarrow{mod}\textsc{np}$, the first for subject- and the second for object-relativisation.
 The size increase is anyway modest compared to what a directional grammar would yield; therefore, the decorations are cost-efficient, in the sense that they offer the most advantages for the least added complexity and lexical ambiguity.
 
@@ -598,7 +553,7 @@ The first states that a proof of $A$ from assumptions $\Gamma$ can be converted 
 The second says that given a proof for $\diamondsuit^d A$ from structure $\Delta$ and a proof of $B$ from a structure $\Delta$ that contains a $d$-bracketed $A$ as a sub-structure, the latter may be replaced by a $\Gamma$ and still yield a $B$.
 Figure~\ref{fig:ill_dutch_modal} presents another relativisation example, showcasing the effect of dependency decorations in the proof.
 Note that the modalities do not alter proof-search when performed in a forward manner, but require the dependency bracketing when done in a backward manner.
-A two-step backward-forward strategy may be used to first construct a standard ILL proof, then insert the modal decorations.
+A two-step backward-forward strategy may be used to first construct a standard MILL proof, then insert the modal decorations.
 
 \begin{figure}
 	\begin{sideways}
@@ -606,19 +561,19 @@ A two-step backward-forward strategy may be used to first construct a standard I
 	\centering
 	\scriptsize
 	\[
-	\infer{\langle \text{eieren} \rangle^\text{mod}, \text{die}, \langle \langle \text{kippen} \rangle^\text{obj}, \text{maken} \rangle^\text{body} \vdash \textsc{np}}{
-		\infer[\rightarrow E]{\text{die}, \langle \langle \text{kippen} \rangle^\text{obj}, \text{maken}\rangle^\text{body} \vdash \diamondsuit^\text{mod}\textsc{np} \rightarrow \textsc{np}}{
+	\infer{\langle \text{eieren} \rangle^\text{mod}, \text{die}, \langle \langle \text{kippen} \rangle^\text{obj}, \text{leggen} \rangle^\text{body} \vdash \textsc{np}}{
+		\infer[\rightarrow E]{\text{die}, \langle \langle \text{kippen} \rangle^\text{obj}, \text{leggen}\rangle^\text{body} \vdash \diamondsuit^\text{mod}\textsc{np} \rightarrow \textsc{np}}{
 			\infer[L]{\text{die} \vdash \diamondsuit^\text{body}(\diamondsuit^\text{su}\textsc{np} \to \textsc{s})\to(\diamondsuit^\text{mod} \textsc{np} \to \textsc{np})}{}
 			&
 			\hspace{-20pt}
-			\infer[\diamondsuit^\text{body}I]{\langle \langle \text{kippen} \rangle^\text{obj}, \text{maken} \rangle^\text{body} \vdash \diamondsuit^\text{body}(\diamondsuit^\text{su}\textsc{np} \to \textsc{s})}{
-				\infer[\rightarrow I]{\langle \text{kippen} \rangle^\text{obj}, \text{maken}  \vdash \diamondsuit^\text{su} \textsc{np}\to \textsc{s}}{
-					\infer[\diamondsuit^\text{su} E]{\langle \text{kippen} \rangle^\text{obj}, \text{maken}, \diamondsuit^\text{su} \textsc{np} \vdash \textsc{s}}{
+			\infer[\diamondsuit^\text{body}I]{\langle \langle \text{kippen} \rangle^\text{obj}, \text{leggen} \rangle^\text{body} \vdash \diamondsuit^\text{body}(\diamondsuit^\text{su}\textsc{np} \to \textsc{s})}{
+				\infer[\rightarrow I]{\langle \text{kippen} \rangle^\text{obj}, \text{leggen}  \vdash \diamondsuit^\text{su} \textsc{np}\to \textsc{s}}{
+					\infer[\diamondsuit^\text{su} E]{\langle \text{kippen} \rangle^\text{obj}, \text{leggen}, \diamondsuit^\text{su} \textsc{np} \vdash \textsc{s}}{
 						\infer[Ax.]{\diamondsuit^\text{su} \textsc{np} \vdash \diamondsuit^\text{su} \textsc{np}}{}
 						&
-						\infer[\rightarrow E]{\langle \text{kippen} \rangle^\text{obj}, \text{maken}, \langle \textsc{np} \rangle^\text{su} \vdash \textsc{s}}{
-							\infer[\rightarrow E]{\text{maken}, \diamondsuit^\text{su} \vdash \diamondsuit^\text{obj} \textsc{np} \to \textsc{s}}{
-								\infer[L]{\text{maken} \vdash \diamondsuit^\text{su}\textsc{np}\to\diamondsuit^\text{obj} \textsc{np} \to \textsc{s}}{}
+						\infer[\rightarrow E]{\langle \text{kippen} \rangle^\text{obj}, \text{leggen}, \langle \textsc{np} \rangle^\text{su} \vdash \textsc{s}}{
+							\infer[\rightarrow E]{\text{leggen}, \diamondsuit^\text{su} \vdash \diamondsuit^\text{obj} \textsc{np} \to \textsc{s}}{
+								\infer[L]{\text{leggen} \vdash \diamondsuit^\text{su}\textsc{np}\to\diamondsuit^\text{obj} \textsc{np} \to \textsc{s}}{}
 								&
 								\infer[Ax.]{\diamondsuit^\text{su}\textsc{np} \vdash \diamondsuit^\text{su}\textsc{np}}{}
 							}
@@ -647,13 +602,13 @@ A two-step backward-forward strategy may be used to first construct a standard I
 	\centering
 	\scriptsize
 	\[
-	\infer{\langle \text{eieren} \rangle^\text{mod}, \text{die}, \langle \langle \text{kippen} \rangle^\text{su}, \text{maken} \rangle^\text{body} \vdash \textsc{np}}{
-		\infer[\rightarrow E]{\text{die}, \langle \langle \text{kippen} \rangle^\text{su}, \text{maken}\rangle^\text{body} \vdash \diamondsuit^\text{mod}\textsc{np} \rightarrow \textsc{np}}{
+	\infer{\langle \text{eieren} \rangle^\text{mod}, \text{die}, \langle \langle \text{kippen} \rangle^\text{su}, \text{leggen} \rangle^\text{body} \vdash \textsc{np}}{
+		\infer[\rightarrow E]{\text{die}, \langle \langle \text{kippen} \rangle^\text{su}, \text{leggen}\rangle^\text{body} \vdash \diamondsuit^\text{mod}\textsc{np} \rightarrow \textsc{np}}{
 			\infer[L]{\text{die} \vdash \diamondsuit^\text{body}(\diamondsuit^\text{obj}\textsc{np} \to \textsc{s})\to(\diamondsuit^\text{mod} \textsc{np} \to \textsc{np})}{}
 			&
-			\infer[\diamondsuit^\text{body}I]{\langle \langle \text{kippen} \rangle^\text{su}, \text{maken} \rangle^\text{body} \vdash \diamondsuit^\text{body}(\diamondsuit^\text{obj}\textsc{np} \to \textsc{s})}{
-				\infer[\rightarrow E]{\langle \text{kippen} \rangle^\text{su}, \text{maken} \vdash \diamondsuit^\text{obj}\textsc{np} \to \textsc{s}}{
-					\infer[L]{\text{maken} \vdash \diamondsuit^\text{su} \textsc{np} \to \diamondsuit^\text{obj} \textsc{np} \to \textsc{s}}{}
+			\infer[\diamondsuit^\text{body}I]{\langle \langle \text{kippen} \rangle^\text{su}, \text{leggen} \rangle^\text{body} \vdash \diamondsuit^\text{body}(\diamondsuit^\text{obj}\textsc{np} \to \textsc{s})}{
+				\infer[\rightarrow E]{\langle \text{kippen} \rangle^\text{su}, \text{leggen} \vdash \diamondsuit^\text{obj}\textsc{np} \to \textsc{s}}{
+					\infer[L]{\text{leggen} \vdash \diamondsuit^\text{su} \textsc{np} \to \diamondsuit^\text{obj} \textsc{np} \to \textsc{s}}{}
 					&
 					\infer[\diamondsuit^\text{su}I]{\langle \text{kippen} \rangle^\text{su} \vdash \diamondsuit^\text{su} \textsc{np}}{
 						\infer[L]{\text{kippen} \vdash \textsc{np}}{}
@@ -671,17 +626,17 @@ A two-step backward-forward strategy may be used to first construct a standard I
 	\label{subfig:modal_obj}
 	\end{subfigure}
 	\end{sideways}
-\caption[Example ILL Derivations with Dependency Modalities]{Example derivations in ILL, using dependency modalities, for the sentence ``eieren die kippen maken''. Subfigure~\ref{subfig:modal_su} presents the subject-relative reading (\textit{eggs that make chickens}), while subfigure~\ref{subfig:modal_obj} presents the object-relative reading (\textit{eggs that chickens make}).}
+\caption[Example MILL Derivations with Dependency Modalities]{Example derivations in MILL, using dependency modalities, for the sentence ``eieren die kippen leggen''. Subfigure~\ref{subfig:modal_su} presents the subject-relative reading (\textit{eggs that lay chickens}), while subfigure~\ref{subfig:modal_obj} presents the object-relative reading (\textit{eggs that chickens lay}). The combination of semantic preferences and dependency annotations should select the second derivation as the most plausible one.}
 \label{fig:ill_dutch_modal}
 \end{figure}
 
 \section{Summary}
 This chapter examined Type-Logical Grammars and some of the major steps throughout their evolution.
 We saw how parsing may be understood as a formal deduction process, and how stricter logics can regulate this process so as to keep it linguistically grammatical.
-Using a few examples, we recognized that stricter logics come at the cost of increased lexical ambiguity, further emphasized for a language with free word order like Dutch. 
-With this in mind, we considered a laxer grammar based on Intuinistic Linear Logic, which is this Chapter's novel contribution.
+Using a few examples, we recognized that stricter logics come at the cost of increased lexical ambiguity, further emphasized for a language with large word order variety like Dutch. 
+With this in mind, we considered a laxer grammar based on Intuitionistic Linear Logic.
 
-An ILL-based grammar boasts simplicity, ease of dealing with discontinuous or long-range dependencies and a clear and direct correspondence with the simply typed linear $\lambda$-calculus, making it an ideal driving force for semantic compositionality.
+A MILL-based grammar boasts simplicity, ease of dealing with discontinuous or long-range dependencies and a clear and direct correspondence with the simply typed linear $\lambda$-calculus, making it an ideal driving force for semantic compositionality.
 On the other hand, the axiomatic treatment of associativity and commutativity permits more proofs than desired and increases parsing complexity.
-To address this issue, we enriched the grammar by subclassing the linear implication to a set of named versions, each one suggesting a unique ``means of consumption'' as specified by a corresponding syntactic dependency. 
-This addition can facilitate a preferential lexical bias, which can be implemented by statistical or heuristic means, aiding in a reduction of the search space ambiguity.
+To address this issue, we enriched the grammar by subclassing the linear implication to a set of named versions, each one suggesting a unique ``means of consumption'' as specified by a corresponding syntactic dependency.
+The novel contribution of this chapter lies in this enrichment, which can facilitate a preferential lexical bias, thus aiding in the reduction of the search space ambiguity.

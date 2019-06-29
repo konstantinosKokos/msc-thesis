@@ -10,8 +10,8 @@ They thus differ from standard dependency or phrase-structure formalisms in the 
 This makes it evident that the most crucial component of a categorial grammar treebank are the type assignments themselves.
 Constructing such a treebank from scratch is impractical; the annotation process is a costly and time-demanding endeavour. 
 Instead, it is easier to utilize pre-annotated corpora, converting them into a categorial format.
-The conversion could be performed manually, in the case of smaller corpora, but a degree of automation becomes imperative for larger ones.
-The process of automatically transforming a syntactically annotated corpus into a categorial grammar treebank is referred to as grammar extraction.
+The conversion could be performed manually, in the case of smaller corpora, but a degree of automation becomes imperative for larger ones, which are a prerequisite for building statistical models.
+The process of automatically transforming a syntactically annotated corpus into a categorial grammar treebank is hereon referred to as grammar extraction.
 It involves the design and application of an algorithm which manipulates the sentential syntactic structure and projects it into categories for each of its parts, as well as a number of preprocessing steps.
 Depending on the grammar and its type system, these categories and their rules of interaction encode the collapsed structure, allowing its full or partial reconstruction.
 
@@ -21,7 +21,9 @@ Phrases are analyzed as binary branching structures, with one branch correspondi
 The distinction between the two is made on the basis of the dependencies and/or syntactic tags provided by the original annotation.
 The head is then treated as a functor from the category of the dependant to the category of their common root, where these are provided by means of some translation from the annotation's tags and dependencies to a closed set of atomic formulae.
 
-Although significant work has been carried out for a wide range of corpora of different languages in the context of various categorial frameworks, there is little point to explicitly listing it or comparing to it due to the drastic differences arising from our novel grammar specification.
+Significant work has been carried out for a wide range of corpora of different languages in the context of various categorial frameworks. 
+Pioneering research provided the groundwork for converting constituency-based corpora to CCG~\cite{steedman2011combinatory} derivations, in languages like English~\cite{hockenmaier2007ccgbank} and German~\cite{hockenmaier2006creating}, with later expansions for languages like Hindi~\cite{ambati2018hindi} and Japanese~\cite{uematsu2015integrating} adapted to dependency-based corpora.
+
 The main point of reference for this chapter is Moortgat and Moot's extraction algorithm~\cite{moortgat2002using} (for an updated version, refer to~\cite{moot2010extraction}), proposed for the extraction of type-logical supertags from the spoken dutch corpus.
 It is in many ways similar to the current endeavor, owing to the affinities between the source corpora and the common language.
 Albeit being the work most related to ours, the proposed algorithm still had to be adapted in many ways.
@@ -252,7 +254,7 @@ Note that for this to work, a deterministic process for selecting a head is nece
 Head-daughters can be told apart by their incoming dependency label, which is either of head (\textit{hd}), relative-clause head (\textit{rhd}), wh-clause head (\textit{whd}), comparative (\textit{comp}) or coordinator (\textit{crd}).
 An empty list is then instantiated for arguments to be filled by type \& dependency pairs.
 Next, the algorithm iterates over the node's daughters, deciding the type of each via \textsc{TypeAssign}.
-For each daughter, an empty list of embedded arguments, also being type \& dependency pairs is also instantiated.
+For each daughter, an empty list of embedded arguments, also being type \& dependency pairs, is also instantiated.
 A full downwards iteration of the DAG, starting from that daughter is carried out.
 If at any time a descendant node is identified with the current call's head, its type, as inferred by \textsc{TypeAssign} called with the new-found inner dependency and the current daughter as arguments, is added to the embedded argument list.
 After this iteration is complete, the dependency between the daughter and the current parent node is inspected; if it bears no secondary marking, the type dictionary is updated and \textsc{RecursiveAssigment} is called anew on the daughter using its inferred type.
@@ -264,7 +266,7 @@ The updated type then reflects the incomplete nature of the DAG rooted at this d
 Finally, if the main dependency between the parent node and the daughter currently examined is not a modifier, the daughter's type is added into the argument list.
 
 After all daughters have been processed, iterated through and their types assigned, the next step is to construct the head's type.
-Since the embedded arguments already account for gaps, the head is simply functor from the argument types (as collected in the arguments list) to the parent's type.
+Since the embedded arguments already account for gaps, the head is simply the functor from the argument types (as collected in the arguments list) to the parent's type.
 
 It is now straightforward to annotate a full DAG by simply selecting its root node, finding its type via a direct translation, initializing an empty dictionary, and filling it via \textsc{RecursiveAssignment} which is simply called with the prior arguments (\ref{alg:ra:annotatedag:start}-\ref{alg:ra:annotatedag:end}).
 
@@ -323,7 +325,7 @@ To consistently binarize multi-argument complex types, we establish a strict par
 The order is motivated by the obliqueness hierarchy present within verbal arguments, loosely inspired by~\cite{dowty}\footnote{Even though this ordering is normally established relative to the result category, we can simplify the process by considering that incompatible arguments will not compete for hierarchy within a single functor --- thus, no more than one partial order is necessary.}.
 The sorting algorithm then arranges a sequence of type \& dependency pairs based solely on the latter.
 Figure~\ref{fig:lattice} depicts the Hasse diagram of the poset, where incomparable items are collapsed into a single set.
-These either never co-exist as arguments to the same functor due to being subclasses of the same dependency (such the various instances of clause bodies) or occupying mutually exclusive positions (as in the complemental verbal arguments), or when they do their order is irrelevant (e.g. modifiers).
+These either never co-exist as arguments to the same functor due to being subclasses of the same dependency (such as the various instances of clause bodies) or occupying mutually exclusive positions (as in the complemental verbal arguments), or when they do their order is irrelevant (e.g. modifiers).
 In the case of incomparable items appearing simultaneously, an alphabetical default is applied.
 Even though conjuncts and modifiers do not directly belong in the obliqueness hierarchy, they are positioned in the poset in a way that ensures type readability and sanity; for instance, modifiers are always placed last, so if a functor corresponds to a modifier construction, the resulting modifier type will always appear last.
 Similarly, coordinators are not derived but may still partake in higher-order types; as such, conjunction dependencies always appear first.
@@ -485,7 +487,7 @@ The purpose of this transformation is to simply hide the uninformative edges.
 In practical terms, no real information is erased (seeing as the edges may be re-introduced at any point with no extra knowledge).
 The impact of this transformation on later applications (e.g. supertagging) is also relatively minor; all it requires is an extra component that identifies multi-word phrases and collapses them into a single element to be later used by the type-assignment process, which can be implemented as a chunking algorithm.
 
-To avoid explicitly defining a type for multi-word phrases (thus also the consequences of such a type), we implement \textit{majority voting scheme} with biased priorities that consistently converts the \textit{mwu} tag onto other tags.
+To avoid explicitly defining a type for multi-word phrases (thus also the consequences of such a type), we implement a \textit{majority voting scheme} with biased priorities that consistently converts the \textit{mwu} tag onto other tags.
 The scheme relies on a simple but intuitive and general rule; the syntactic category of the multi-word phrase may be almost perfectly inferred by the categories of its daughters. 
 Therefore, we simply sum the occurrences of each part-of-speech tag exhibited by its daughters. 
 Most of the time, the set of these tags is singular, containing either the noun (\textit{n}) or the special (\textit{spec}) tag as its sole item, the latter being used as a catch-all tag.
@@ -504,7 +506,7 @@ An example of the transformation is presented in Figure~\ref{fig:mwu}.
         \includegraphics[scale=0.48]{Figures/mwu2.pdf}
         \caption{After collapse}
     \end{subfigure}
-    \caption[Multi-Word Unit Collapse]{Derivation structure before (a) and after (b) the collapse of a mwu sub-DAG into a single for the example sentence ``Dit zijn zogenaamde shared service centers'' (\textit{These are so-called shared service centers}) [\texttt{dpc-ibm-001315-nl-sen.p.85.s.1}]. Prior to the transformation, the phrase ``shared service centers'' is annotated as a sequence of nodes, rooted to a common ancestor. After the transformation, the three nodes are chunked into a single node that spans all three lexical items. The phrasal category of the new node is inferred by majority voting over its original children.}
+    \caption[Multi-Word Unit Collapse]{Derivation structure before (a) and after (b) the collapse of a mwu sub-DAG into a single phrase for the example sentence ``Dit zijn zogenaamde shared service centers'' (\textit{These are so-called shared service centers}) [\texttt{dpc-ibm-001315-nl-sen.p.85.s.1}]. Prior to the transformation, the phrase ``shared service centers'' is annotated as a sequence of nodes, rooted to a common ancestor. After the transformation, the three nodes are chunked into a single node that spans all three lexical items. The phrasal category of the new node is inferred by majority voting over its original children.}
     \label{fig:mwu}
 \end{figure}
 
@@ -517,7 +519,7 @@ Conjunctions are more general than multi-word units, in the sense that their con
 When multiple daughter categories exist and their occurrence counts match, the decision on what tag to assign is not clear-cut; to account for conjunctions of uneven parts, we therefore expand upon the scheme by adding further biases.
 The most informed decision we can make is to insert a preferential treatment towards sentential types, followed by nouns (assuming that all non-noun daughters are nominalized), followed by adjectives (assuming that participial phrases are used as adjectival phrases).
 If neither of these preferences are satisfied, we default to the first item of the most highly occurring tag in the phrase.
-We find this heuristic to be adequately performing; the uncertainty introduced when it is not is a minimal compromise.
+We find this heuristic to be adequately performing; the uncertainty introduced, when it is not, is a minimal compromise.
 
 Just like determiner pairs, conjunctions are sometimes coordinated not by a single head, but rather a pair of coordinators; for instance ``zowel.. als'' (\textit{such.. as}), ``respectievelijk ..en'' (\textit{respectively.. and}), etc. 
 These pairs are again treated via a special type, \textsc{\_crd}, read as \textit{second item of a coordinator pair}, which looks for a coordinator type to its left (not necessarily adjacent) and collapses with it inheriting its type.
@@ -787,7 +789,7 @@ The inverse process, i.e. refining the extraction, is also largely simplified; o
 \subsection{Processing}
 As mentioned earlier, the development process of the extraction component had to follow an iterative approach that incorporated solutions for particular cases in a gradual fashion, either as exceptions or general rules and transformations depending on their regularity.
 Even though this poses a difficulty in pre-defining a concrete, end-to-end design pattern, extra effort was put into the adaptability and extensibility of the code in order to accommodate future additions and changes.
-To that end, the extraction component relies on a simple but robust procedure; a decomposition module that accepts an input sample, applies a series of transformations onto it, and finally calling the type inference algorithm on the result.
+To that end, the extraction component relies on a simple but robust procedure; a decomposition module that accepts an input sample, applies a series of transformations onto it, and finally calls the type inference algorithm on the result.
 
 This yields a number of significant benefits.
 First off, the overall transformation is malleable, being the composition of arbitrary independent functions.

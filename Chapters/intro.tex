@@ -1,9 +1,36 @@
 \chapter{Introduction}
 \label{chapter:intro}
+This thesis is concerned with the parsing as deduction paradigm, as orchestrated by type-logical grammars, perceived through the lens of a data-driven experimental setting.
+It seeks to bridge the gap between formal theory and empirical practice, integrating insights from half a century of progress in categorial type logics with recent advances in neural networks and natural language processing.
 
-% semantic compositionality
-% syntax
-% lambda terms?
-% crry 
-% dutch
-% bridge gap between formal theory and practice
+The key theme and the underlying goal behind this work is the development of a concrete, robust and widely applicable methodology for syntactic analysis that naturally lends itself to semantic uses.
+The path towards this goal includes many twists and turns, forcing study of semantics to assume a secondary role throughout the thesis.
+What is primarily addressed instead are exactly these twists and turns, the resolution of which brings us at an arm's reach of semantics by this thesis' conclusion.
+
+Even though the methods applied are language-agnostic and highly general, the experiments performed focus on Dutch.
+Dutch is a particularly challenging language to work with, owing to its many syntactic variations with respect to word order.
+As such, it provides an excellent testing ground that puts our designs and hypotheses under rigorous tests, while soliciting novel approaches and creative solutions.
+
+The thesis is organized in four major chapters.
+Each chapter is largely autonomous, in the sense that it treats a different topic and seeks to answer a different research question.
+However, there is a weak linear dependency between chapters as each one progressively expands upon its predecessors' results; thus, an exhaustive reading should best follow the document in the sequential order it is presented.
+Chapters all share a similar structure; they have their own brief introductory overview and a summarizing conclusion which aims to concisely break down its scope and contribution.
+A rapid but informative reading could be done on the basis of these summaries.
+
+We begin in Chapter~\ref{chapter:tlg} by providing a brief account of Type-Logical Grammars and their most common varieties.
+In considering Dutch, we notice practical issues caused by the language's peculiarities and seek out ways to address them.
+The chapter's motif is the balance between formal rigor and pragmatic applicability of type-logical grammars for large-scale use in a language like Dutch.
+The chapter concludes with a heedful compromise that retains the best of both worlds.
+
+Having specified the grammar and its latent logic, Chapter~\ref{chapter:extraction} then sets out to populate a data-driven type lexicon.
+The dependency-annotated sentences of the written Dutch corpus, Lassy-Small, is used to extrapolate type-logical derivations and phrasal type assignments.
+The algorithmic process of this conversion is detailed, alongside the transformations necessitated by incompatibilities between the corpus' annotation philosophy and the grammar's specifications.
+
+Chapter~\ref{chapter:sup} makes for a change of pace; it deals with supertagging, the statistical learning process through which type sequences may be assigned to sentences not included in the source corpus.
+In reviewing the extracted type system, it notes a distinction to prior supertagging applications, related to the significantly larger size of the lexicon.
+The question then turns to designing a system capable of overcoming this complication, accomplished through a simple reformulation of the problem statement.
+
+Finally, Chapter~\ref{chapter:parsing} seeks to alleviate the proof-theoretic concessions made during the grammar's specification.
+The topic revolves around the manipulation of an ambiguous type-logical proof structure utilizing proof-external information sources such as preferential biases exerted by semantic content.
+
+A high-level synopsis plus a few concluding remarks are presented in Chapter~\ref{chapter:conclusion}.
