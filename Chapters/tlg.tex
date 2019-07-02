@@ -390,7 +390,7 @@ The identity axiom simply states that we may instantiate a free variable $x$ of 
 The elimination rule $\rightarrow E$ states that if we have a program that from a typing environment $\Gamma$ (i.e. a set of type-specified variables) can produce a function $s$ of type $A \to B$, and a program that from another set $\Delta$ can produce a variable $t$ of type $A$, then $s$ may be applied to $t$ yielding a variable of type $B$.
 Dually, the introduction rule states that from a program that produces a variable $u$ of type $B$ out of a set of variables $\Gamma$ together with a variable $x$ of type $A$, we can construct a program for a function of type $A\to B$ by abstracting $x$ away.
 
-Recalling that our variables are instantiated by a type lexicon, we can easily shift from syntax to semantics via an isomorphic mapping.
+Recalling that our variables are instantiated by a type lexicon, we can easily shift from syntax to semantics via a homomorphic mapping.
 Concretely, for each lexical type assignment we need also provide a corresponding semantic assignment.
 Then, the process of meaning assembly for a phrase is identical with the execution of the functional program dictated by its syntactic derivation; in other words, we may use the semantic values of our lexicon, applying function-words to their arguments in a hierarchical manner, guided by the $\lambda$-term that encodes the proof structure.
 
@@ -527,7 +527,7 @@ It is noteworthy to point out that not all implication instances need be decorat
 \paragraph{A Formal Treatment}
 Throughout the rest of the thesis, we will be using the decsribed dependency decorations in a informal manner, as a meta-logical notation that is simply used to convey useful auxiliary information.
 However, such decorations can be properly included in the logic in the form of modal operators.
-First, consider that the arrow decoration is a characterization of the means of argument consumption; as such, it can be shifted on to the argument itself.
+First, consider that the arrow decoration is a characterization of the means of argument consumption; as such, it can be shifted onto the argument itself.
 With this in mind, we can insert a unary logical connective $\diamondsuit^d$ for each dependency label $d$, together with its corresponding structural counterpart $\langle \rangle ^d$.
 
 The logic then requires two extra rules for $\diamondsuit^d$ Introduction and Elimination:

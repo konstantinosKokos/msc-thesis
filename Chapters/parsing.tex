@@ -54,7 +54,7 @@ Finally, given that our complex types are the signatures of binary functors, eli
 
 \paragraph{Overview}
 In practical terms, we first provide our system with a phrase (the full sequence of premises), out of which the phrasal type is derived.
-After zero or more introduction applications, the phrase is split into two disjoint (possibly non-contiguous) sequences of premises.
+After zero or more applications of an introduction rule followed by one application of an elimination rule, the phrase is split into two disjoint (possibly non-contiguous) sequences of premises.
 If any of the resulting sequences has an length of one, it corresponds to an axiom leaf; otherwise, it requires further processing, which is accomplished by repeating the same process anew.
 This iteration progressively yields a binary branching tree, that is in one-to-one correspondence with the underlying proof constructed bottom-up (with introduction rules telescoped).
 

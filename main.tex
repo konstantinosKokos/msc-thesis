@@ -111,26 +111,25 @@
 	Master's Committee: \\
 	\quad\quad	Project Supervisor: Michael Moortgat \\
 	\quad\quad	Second Examiner: Tejaswini Deoskar \\
-	\vspace{1em}
-	\quad\quad	Richard Moot
+	\quad\quad	External Expert: Richard Moot
 	\end{flushleft}
 
 \end{titlepage}
 
 \begin{abstract}
 This thesis is concerned with type-logical grammars and their practical applicability as tools of reasoning about sentence syntax and semantics.
-The focal point is narrowed to Dutch, a language notorious for its word order freedom.
-In order to overcome the inherent difficulties arising as a result of that freedom, the thesis explores and expands upon a type grammar based on Multiplicative Intuitionistic Linear Logic, agnostic to word order but enriched with decorations that heuristically reduce its proof-theoretic complexity.
-An algorithm for the conversion of dependency-annotated sentences into type sequences is then implemented, populating the abstract framework with concrete, data-driven lexical types.
+The focal point is narrowed to Dutch, a language exhibiting a large degree of word order variability.
+In order to overcome difficulties arising as a result of that variability, the thesis explores and expands upon a type grammar based on Multiplicative Intuitionistic Linear Logic, agnostic to word order but enriched with decorations that aim to reduce its proof-theoretic complexity.
+An algorithm for the conversion of dependency-annotated sentences into type sequences is then implemented, populating the type logic with concrete, data-driven lexical types.
 Two experiments are ran on the resulting grammar instantiation.
 The first pertains to the learnability of the type-assignment process by a neural architecture. 
-A novel, highly accurate model is proposed, exhibiting remarkable generalization by not being confined to a pre-specified type vocabulary.
+A novel application of a self-attentive sequence transduction model is proposed; contrary to established practices, it constructs types inductively by internalizing the type-formation syntax, thus exhibiting generalizability beyond a pre-specified type vocabulary.
 The second revolves around a deductive parsing system that can resolve structural ambiguities by consulting both word and type information; preliminary results suggest both excellent computational efficiency and performance.
 \end{abstract}
 
 \begin{acknowledgements}
 This thesis would not have been made possible without the ceaseless aid of my support committee;
-Richard, who always took the time to listen to my ideas and assist in any problems I would encounter, but also kept a watchful eye for oversights I would otherwise be obvlious to, and
+Richard, who always took the time to listen to my ideas and assist in any problems I would encounter, but also kept a watchful eye for oversights I would otherwise be oblivious to, and
 Tejaswini, who kept me motivated despite early failures, and was keen to point out novelty in results I considered trivial.
 I could not overstate my luck in being able to work under Michael's supervision.
 His expertise, resourcefulness and enthusiasm have inspired and permeated through every aspect of this work.

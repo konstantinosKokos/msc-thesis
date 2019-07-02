@@ -52,7 +52,7 @@ Let $\mathcal{E}$ be a word embedding system, trained on a corpus with vocabular
 \[
 \mathcal{E}: \mathcal{V}' \to \mathbb{R}^d
 \]
-Then, we may use our lexicon $\mathcal{L}$ to parametrically fit a continuous function $f_\mathcal{L}: \mathbb{R}^d \to \mathbb{S}^{|\mathcal{T}|}$, which by function composition yields a probabilistic lexicon over an expanded domain:
+Then, we may use our lexicon $\mathcal{L}$ to parametrically fit a continuous function $f_\mathcal{L}: \mathbb{R}^d \to \mathcal{S}^{|\mathcal{T}|}$, which by function composition yields a probabilistic lexicon over an expanded domain:
 \[
  f_\mathcal{L} \circ \mathcal{E}: \mathcal{V}' \to \mathbb{R}^d
 \]
@@ -63,13 +63,13 @@ The above addition allows expanding the supertagger's domain to words not presen
 Language is not a closed construct, however; there still is a possibility of the supertagger encountering a word $w$ that is not present in the expanded corpus.
 Rather than backing to default behavior, a further and final expansion of the domain may be achieved by incorporating sub-word information (e.g. morpheme- and character-level content).
 In fact, modern vectorization techniques do utilize such information in order to account for languages that feature word generation by compounding or rich but systematic morphology~\cite{fasttext}.
-Then, $\mathcal{E}$ becomes a mapping from any word in the language $\mathcal{L}$ onto an object of the vector space:
+Then, $\mathcal{E}$ becomes a mapping from any word in the language $L$ onto an object of the vector space:
 \[
-\mathcal{E}: \mathcal{L} \to \mathbb{R}^d
+\mathcal{E}: L \to \mathbb{R}^d
 \]
 and its composition with the continuous type-assignment function is an unbounded domain supertagger:
 \[
-f_\mathcal{L} \circ \mathcal{E}: \mathcal{L} \to \mathcal{S}^{|\mathcal{T}|}
+f_\mathcal{L} \circ \mathcal{E}: L \to \mathcal{S}^{|\mathcal{T}|}
 \]
 
 \paragraph{Case In Point}
@@ -118,7 +118,7 @@ Finally, there are almost 30 lexical items (mostly function words, e.g. coordina
 The previous section presented a brief overview of supertagging and its progress through the years.
 It concluded with the current state of the art, which treats the problem as a case of sequence labeling, modeled by recurrent neural networks.
 This perspective is quite natural, and allows supertagging systems to directly inherit the constant and ongoing progress of sequence labeling architectures.
-These benefits, however, come at the cost of two significant side-effects, both inherent to classification algorithms.
+These benefits, however, come at the expense of two significant side-effects, both inherent to classification algorithms.
 
 The first pertains to the issue that class imbalance poses to supervised learners.
 Across all categorial grammars, some categories have disproportionately low frequencies of occurrence compared to the more common ones, leading to severe sparsity issues, which are further pronounced the more refined the grammar is.
@@ -149,7 +149,7 @@ Rather, all types are produced by a underlying inductive scheme:
 where $\textsc{t}$, $\textsc{t}_1$, $\textsc{t}_2$ are types, $\textsc{a}$ is an atomic type and $\myrightarrow{d}$ an implication arrow, decorated with the label $d$.
 
 An examination of the above scheme reveals a simple context-free grammar (CFG).
-Given the fact that our connectives are of fixed arity, the polish notation~\cite{hamblin1962translation} can be adopted, abolishing the need for parentheses and reducing the representation length of types, while also encoding their order in an a succint, up-front manner.
+Given the fact that our connectives are of fixed arity, the polish notation~\cite{hamblin1962translation} can be adopted, abolishing the need for parentheses and reducing the representation length of types, while also encoding their order in a succinct, up-front manner.
 Then, the grammar materializes using just two meta-rules for productions:
 \begin{align}
 \{ (S & \implies A) \  \forall \ A \in \mathcal{A} \}
